@@ -797,6 +797,24 @@ document.addEventListener('keydown', e=>{
 // INIT
 // ═══════════════════════════════════════════════════════
 renderAll();
+ // --- كود حفظ اليوم تلقائياً لعادل ---
+
+// 1. وظيفة لحفظ اليوم كلما تغير
+const originalGoDay = typeof goDay !== 'undefined' ? goDay : null;
+if (originalGoDay) {
+    window.goDay = function(n) {
+        localStorage.setItem('adel_last_day', n);
+        originalGoDay(n);
+    };
+}
+
+// 2. وظيفة لفتح آخر يوم عند تشغيل التطبيق
+window.addEventListener('load', () => {
+    const savedDay = localStorage.getItem('adel_last_day');
+    if (savedDay !== null && originalGoDay) {
+        goDay(parseInt(savedDay));
+    }
+}); 
 </script>
 </body>
 </html>
