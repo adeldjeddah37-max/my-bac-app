@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>نظام مهام عادل — بكالوريا 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070F;--s1:#0D0D1C;--s2:#111128;--s3:#16163A;
+  --bdr:rgba(255,255,255,.07);--bdr2:rgba(255,255,255,.12);
+  --tx:#E4E4FF;--mt:#5A5A8A;--mt2:#7A7AAA;
+  --math:#7C6AFF;--phy:#FF5C7A;--sci:#2DD4A0;--phi:#FFB347;
+  --arb:#38C7FF;--lng:#C77DFF;--isl:#06D6A0;--soc:#FF6B8A;--rev:#8899BB;--fix:#FFD166;
+  --green:#2DD4A0;--red:#FF5C7A
+}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+
+/* ── GRID BG ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(124,106,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(124,106,255,.03) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;z-index:0
+}
+
+/* ── HEADER ── */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,7,15,.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--bdr);
+  padding:0 20px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px
+}
+.logo{display:flex;align-items:center;gap:10px;white-space:nowrap}
+.logo-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,var(--math),var(--arb));
+  display:flex;align-items:center;justify-content:center;font-size:.9rem
+}
+.logo-txt{font-size:.85rem;font-weight:800;line-height:1.2}
+.logo-sub{font-size:.65rem;color:var(--mt);font-weight:400}
+.hd-center{display:flex;align-items:center;gap:8px}
+.day-nav{display:flex;align-items:center;gap:6px}
+.nav-btn{
+  background:var(--s1);border:1px solid var(--bdr);color:var(--tx);
+  width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:.85rem;
+  display:flex;align-items:center;justify-content:center;transition:all .15s
+}
+.nav-btn:hover{background:var(--s2);border-color:var(--bdr2)}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.day-display{
+  background:var(--s1);border:1px solid var(--bdr);
+  padding:4px 14px;border-radius:8px;font-size:.8rem;font-weight:700;
+  min-width:90px;text-align:center;cursor:pointer;transition:all .15s
+}
+.day-display:hover{background:var(--s2)}
+.hd-right{display:flex;align-items:center;gap:8px}
+.streak-badge{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.25);
+  padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:700;color:var(--fix)
+}
+.total-badge{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.25);
+  padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:700;color:var(--math)
+}
+
+/* ── OVERVIEW PANEL (top sliding) ── */
+.overview{
+  position:fixed;top:60px;left:0;right:0;z-index:99;
+  background:rgba(7,7,15,.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--bdr);padding:20px;
+  transform:translateY(-110%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+  max-height:80vh;overflow-y:auto
+}
+.overview.open{transform:translateY(0)}
+.ov-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:16px}
+@media(max-width:700px){.ov-grid{grid-template-columns:repeat(7,1fr)}}
+.ov-day{
+  aspect-ratio:1;border-radius:6px;background:var(--s1);border:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;font-weight:700;cursor:pointer;transition:all .15s;color:var(--mt)
+}
+.ov-day:hover{border-color:var(--bdr2);color:var(--tx)}
+.ov-day.cur{border-color:var(--math);color:var(--math);background:rgba(124,106,255,.12)}
+.ov-day.done{background:rgba(45,212,160,.12);border-color:rgba(45,212,160,.3);color:var(--sci)}
+.ov-day.partial{background:rgba(255,179,71,.08);border-color:rgba(255,179,71,.2);color:var(--phi)}
+.ov-close{
+  position:absolute;top:16px;left:20px;background:var(--s1);border:1px solid var(--bdr);
+  color:var(--mt);padding:4px 10px;border-radius:7px;cursor:pointer;font-size:.75rem
+}
+
+/* ── MAIN LAYOUT ── */
+.main{
+  display:grid;grid-template-columns:280px 1fr;
+  max-width:1300px;margin:0 auto;padding:24px 16px;
+  gap:20px;position:relative;z-index:1
+}
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+
+/* ── SIDEBAR ── */
+.sidebar{display:flex;flex-direction:column;gap:14px}
+
+/* Progress card */
+.prog-card{
+  background:var(--s1);border:1px solid var(--bdr);border-radius:16px;padding:18px
+}
+.prog-title{font-size:.7rem;font-weight:800;color:var(--mt);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+.overall-ring{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.ring{position:relative;width:64px;height:64px;flex-shrink:0}
+.ring svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.06);stroke-width:5}
+.ring-fill{fill:none;stroke:var(--math);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)}
+.ring-pct{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:900;color:var(--math)
+}
+.overall-info .n{font-size:1.4rem;font-weight:900}
+.overall-info .l{font-size:.72rem;color:var(--mt)}
+
+.sub-row{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.sub-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sub-name{font-size:.72rem;flex:1;color:var(--mt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-bar{flex:2;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+.sub-fill{height:100%;border-radius:2px;transition:width .8s ease}
+.sub-pct{font-size:.65rem;color:var(--mt);width:28px;text-align:left}
+
+/* Info card */
+.info-card{
+  background:var(--s1);border:1px solid var(--bdr);border-radius:16px;padding:16px
+}
+.phase-banner{
+  padding:10px 14px;border-radius:10px;margin-bottom:12px;
+  font-size:.78rem;font-weight:700;line-height:1.5
+}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--bdr);font-size:.75rem}
+.info-row:last-child{border:none}
+.info-row .lbl{color:var(--mt)}
+.info-row .val{font-weight:700}
+
+/* Daily fixed */
+.fixed-card{
+  background:var(--s1);border:1px solid var(--bdr);border-radius:16px;padding:16px
+}
+.fix-task{
+  display:flex;align-items:center;gap:10px;padding:8px 0;
+  border-bottom:1px solid var(--bdr);cursor:pointer;transition:background .1s
+}
+.fix-task:last-child{border:none}
+.fix-check{
+  width:18px;height:18px;border-radius:5px;border:2px solid var(--fix);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;font-size:.65rem
+}
+.fix-task.done .fix-check{background:var(--fix);border-color:var(--fix);color:#000}
+.fix-task.done .fix-label{text-decoration:line-through;color:var(--mt)}
+.fix-label{font-size:.78rem;flex:1}
+
+/* ── DAY CONTENT ── */
+.day-content{display:flex;flex-direction:column;gap:16px}
+
+/* Day header */
+.day-header{
+  background:var(--s1);border:1px solid var(--bdr);border-radius:16px;
+  padding:20px 22px;display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden
+}
+.day-header::before{
+  content:'';position:absolute;top:0;right:0;bottom:0;width:4px;
+  background:var(--phase-col)
+}
+.dh-left .day-num{font-size:2.2rem;font-weight:900;line-height:1;color:var(--phase-col)}
+.dh-left .day-label{font-size:.75rem;color:var(--mt);margin-top:2px}
+.dh-center{flex:1;padding:0 20px}
+.dh-center .week-label{font-size:.7rem;color:var(--mt);font-weight:700;letter-spacing:1px;margin-bottom:4px}
+.dh-center .phase-label{font-size:.9rem;font-weight:800}
+.dh-right{text-align:left}
+.day-pct-big{font-size:1.8rem;font-weight:900;color:var(--phase-col);line-height:1}
+.day-pct-label{font-size:.65rem;color:var(--mt)}
+.day-pbar{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:10px;overflow:hidden}
+.day-pfill{height:100%;border-radius:2px;background:var(--phase-col);transition:width .6s ease}
+
+/* Task group */
+.task-group{background:var(--s1);border:1px solid var(--bdr);border-radius:16px;overflow:hidden}
+.tg-head{
+  padding:11px 18px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.02)
+}
+.tg-icon{font-size:1rem}
+.tg-name{font-size:.78rem;font-weight:800;flex:1}
+.tg-count{font-size:.65rem;color:var(--mt)}
+.tg-hrs{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.05)}
+
+/* Task item */
+.task-item{
+  display:flex;align-items:flex-start;gap:12px;padding:13px 18px;
+  border-bottom:1px solid var(--bdr);cursor:pointer;
+  transition:background .12s;position:relative
+}
+.task-item:last-child{border:none}
+.task-item:hover{background:rgba(255,255,255,.025)}
+.task-item.done{background:rgba(45,212,160,.03)}
+.task-check{
+  width:20px;height:20px;border-radius:6px;border:2px solid currentColor;
+  flex-shrink:0;margin-top:1px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;font-size:.7rem
+}
+.task-item.done .task-check{background:currentColor;color:#000!important}
+.task-item.done .task-body .tn{text-decoration:line-through;color:var(--mt)}
+.task-body{flex:1}
+.tn{font-size:.84rem;font-weight:600;line-height:1.4;transition:color .2s}
+.th{font-size:.71rem;color:var(--mt);margin-top:2px}
+.task-hrs{
+  font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:10px;
+  background:rgba(255,255,255,.04);color:var(--mt2);white-space:nowrap;flex-shrink:0
+}
+
+/* Milestone banner */
+.milestone{
+  padding:12px 18px;background:rgba(45,212,160,.06);
+  border:1px solid rgba(45,212,160,.2);border-radius:12px;
+  display:flex;align-items:center;gap:10px;
+  animation:pulse 2s ease infinite
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(45,212,160,.2)}50%{box-shadow:0 0 0 6px rgba(45,212,160,0)}}
+.ms-icon{font-size:1.4rem}
+.ms-text{font-size:.82rem;font-weight:700;flex:1}
+.ms-sub{font-size:.72rem;color:var(--mt);margin-top:2px}
+
+/* Tip box */
+.tip-box{
+  padding:14px 18px;background:rgba(124,106,255,.06);
+  border:1px solid rgba(124,106,255,.15);border-radius:12px;
+  font-size:.82rem;color:var(--mt2);line-height:1.7
+}
+.tip-box::before{content:'💡 ';font-size:.9rem}
+
+/* Complete screen */
+.complete-screen{
+  text-align:center;padding:40px 20px;
+  background:var(--s1);border:1px solid rgba(45,212,160,.2);border-radius:16px
+}
+.complete-screen h2{font-size:1.4rem;font-weight:900;color:var(--sci);margin-bottom:8px}
+.complete-screen p{color:var(--mt);font-size:.85rem}
+.confetti{font-size:2rem;margin-bottom:16px;animation:bounce .5s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+
+/* Next day btn */
+.next-day-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px;border-radius:12px;
+  background:linear-gradient(135deg,var(--math),var(--arb));
+  border:none;cursor:pointer;font-family:'Cairo',sans-serif;
+  font-size:.88rem;font-weight:800;color:#fff;transition:opacity .2s
+}
+.next-day-btn:hover{opacity:.85}
+
+/* Animations */
+@keyframes AU{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:AU .4s ease both}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--sci);color:#000;font-weight:700;font-size:.82rem;
+  padding:10px 22px;border-radius:20px;z-index:999;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--math);border-radius:2px}
+
+@media(max-width:600px){
+  header{padding:0 12px;gap:8px}
+  .logo-txt,.logo-sub{display:none}
+  .streak-badge .sl{display:none}
+  .main{padding:14px 10px;gap:14px}
+  .day-header{padding:14px}
+  .dh-left .day-num{font-size:1.6rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ OVERVIEW ══ -->
+<div class="overview" id="overview">
+  <button class="ov-close" onclick="toggleOverview()">✕ إغلاق</button>
+  <div style="font-size:.78rem;font-weight:800;color:var(--mt);margin-bottom:12px;text-align:center">اختر يوماً — 60 يوماً</div>
+  <div class="ov-grid" id="ov-grid"></div>
+  <div style="display:flex;gap:14px;justify-content:center;font-size:.65rem;color:var(--mt);margin-top:8px">
+    <span style="color:var(--sci)">● مكتمل</span>
+    <span style="color:var(--phi)">● جزئي</span>
+    <span style="color:var(--math)">● اليوم الحالي</span>
+    <span>● لم يبدأ</span>
+  </div>
+</div>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">📚</div>
+    <div>
+      <div class="logo-txt">نظام مهام عادل</div>
+      <div class="logo-sub">بكالوريا 2025</div>
+    </div>
+  </div>
+  <div class="hd-center">
+    <div class="day-nav">
+      <button class="nav-btn" id="prev-btn" onclick="goDay(currentDay-1)">→</button>
+      <div class="day-display" onclick="toggleOverview()" id="day-display">يوم 1 / 60</div>
+      <button class="nav-btn" id="next-btn" onclick="goDay(currentDay+1)">←</button>
+    </div>
+  </div>
+  <div class="hd-right">
+    <div class="streak-badge">🔥 <span id="streak-num">0</span><span class="sl"> يوم</span></div>
+    <div class="total-badge">✅ <span id="total-pct">0%</span></div>
+  </div>
+</header>
+
+<div class="main">
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar">
+    <div class="prog-card">
+      <div class="prog-title">تقدم المواد الكلي</div>
+      <div class="overall-ring">
+        <div class="ring">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle class="ring-bg" cx="32" cy="32" r="27"/>
+            <circle class="ring-fill" id="ring-fill" cx="32" cy="32" r="27" stroke-dasharray="169.6" stroke-dashoffset="169.6"/>
+          </svg>
+          <div class="ring-pct" id="ring-pct">0%</div>
+        </div>
+        <div class="overall-info">
+          <div class="n" id="overall-done">0</div>
+          <div class="l">مهمة منجزة</div>
+          <div class="l" style="margin-top:4px" id="overall-total">من 0 مهمة</div>
+        </div>
+      </div>
+      <div id="sub-progress"></div>
+    </div>
+
+    <div class="info-card">
+      <div class="prog-title">معلومات اليوم</div>
+      <div class="phase-banner" id="phase-banner"></div>
+      <div class="info-row"><span class="lbl">الأسبوع</span><span class="val" id="info-week">—</span></div>
+      <div class="info-row"><span class="lbl">المرحلة</span><span class="val" id="info-phase">—</span></div>
+      <div class="info-row"><span class="lbl">ساعات اليوم</span><span class="val" id="info-hrs">—</span></div>
+      <div class="info-row"><span class="lbl">المهام المتبقية</span><span class="val" id="info-rem">—</span></div>
+    </div>
+
+    <div class="fixed-card">
+      <div class="prog-title" style="margin-bottom:10px">المهام اليومية الثابتة</div>
+      <div id="fixed-tasks"></div>
+    </div>
+  </div>
+
+  <!-- ══ CONTENT ══ -->
+  <div class="day-content" id="day-content"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════
+const S = {
+  math:{c:'#7C6AFF',l:'رياضيات',i:'📐'},
+  phy: {c:'#FF5C7A',l:'فيزياء وكيمياء',i:'⚗️'},
+  sci: {c:'#2DD4A0',l:'علوم تجريبية',i:'🌿'},
+  phi: {c:'#FFB347',l:'فلسفة',i:'🧠'},
+  arb: {c:'#38C7FF',l:'عربية',i:'📖'},
+  lng: {c:'#C77DFF',l:'لغات أجنبية',i:'🌍'},
+  isl: {c:'#06D6A0',l:'إسلامية',i:'☪️'},
+  soc: {c:'#FF6B8A',l:'اجتماعيات',i:'🗺️'},
+  rev: {c:'#8899BB',l:'مراجعة عامة',i:'🔄'},
+};
+const PHASES = {
+  1:{l:'مرحلة الانطلاق',c:'#7C6AFF'},
+  2:{l:'مرحلة التعمق',c:'#FF5C7A'},
+  3:{l:'مرحلة الإنهاء',c:'#FFB347'},
+  4:{l:'مرحلة المراجعة',c:'#2DD4A0'},
+};
+
+// ── 60 DAYS ──
+const DAYS = [
+{d:1,w:1,ph:1,tasks:[{id:'m1',s:'math',l:'متتاليات: تمرين 1–2',h:1.5},{id:'p1',s:'phy',l:'كهرباء: جزء 1/6',h:2},{id:'sc1',s:'sci',l:'التركيب الضوئي: جزء 1/2',h:2},{id:'a1',s:'arb',l:'عربية: مراجعة دروس ج1',h:1},{id:'is1',s:'isl',l:'إسلامية: درس 1',h:1}],miles:[],tip:'ابدأ بالرياضيات أول شيء صباحاً — التركيز في أعلى مستوياته'},
+{d:2,w:1,ph:1,tasks:[{id:'m2',s:'math',l:'متتاليات: تمرين 3–4',h:1.5},{id:'p2',s:'phy',l:'كهرباء: جزء 2/6',h:2},{id:'sc2',s:'sci',l:'التركيب الضوئي: جزء 2/2 ✓',h:2},{id:'a2',s:'arb',l:'عربية: موضوع 1',h:1},{id:'ph1',s:'phi',l:'فلسفة: مقالة 1 / ج1',h:1.5}],miles:[],tip:'التركيب الضوئي ينتهي اليوم — مادة كاملة في يومين'},
+{d:3,w:1,ph:1,tasks:[{id:'m3',s:'math',l:'متتاليات: تمرين 5–6',h:1.5},{id:'p3',s:'phy',l:'كهرباء: جزء 3/6',h:2},{id:'sc3',s:'sci',l:'التنفس: جزء 1/2',h:1},{id:'ph2',s:'phi',l:'فلسفة: مقالة 1 / ج2',h:1.5},{id:'a3',s:'arb',l:'عربية: موضوع 2',h:1},{id:'is2',s:'isl',l:'إسلامية: درس 2',h:1}],miles:[{t:'✅ علوم تجريبية: التركيب الضوئي',sub:'بدأنا بخطوة ممتازة'}],tip:''},
+{d:4,w:1,ph:1,tasks:[{id:'m4',s:'math',l:'متتاليات: تمرين 7–8',h:1.5},{id:'p4',s:'phy',l:'كهرباء: جزء 4/6',h:2},{id:'sc4',s:'sci',l:'التنفس: جزء 2/2 ✓',h:1},{id:'ph3',s:'phi',l:'فلسفة: مقالة 1 / ج3 ✓',h:1.5},{id:'a4',s:'arb',l:'عربية: موضوع 3',h:1},{id:'lg1',s:'lng',l:'إنجليزية: دروس جزء 1',h:2}],miles:[{t:'✅ علوم تجريبية كاملة',sub:'6 ساعات خلف الظهر'},{t:'✅ فلسفة: مقالة 1',sub:'9 مقالات متبقية'}],tip:'علوم تجريبية انتهت! لن تلمسها مجدداً'},
+{d:5,w:1,ph:1,tasks:[{id:'m5',s:'math',l:'متتاليات: تمرين 9–10',h:1.5},{id:'p5',s:'phy',l:'كهرباء: جزء 5/6',h:2},{id:'lg2',s:'lng',l:'إنجليزية: دروس جزء 2 ✓',h:2},{id:'ph4',s:'phi',l:'فلسفة: مقالة 2 / ج1',h:1.5},{id:'a5',s:'arb',l:'عربية: موضوع 4',h:1},{id:'is3',s:'isl',l:'إسلامية: درس 3',h:1}],miles:[{t:'✅ إنجليزية: دروس منتهية',sub:'بقيت 5 مواضيع فقط'}],tip:'دروس الإنجليزية خلاص — الباقي مواضيع فعلية فقط'},
+{d:6,w:1,ph:1,tasks:[{id:'m6',s:'math',l:'متتاليات: تمرين 11–12',h:1.5},{id:'p6',s:'phy',l:'كهرباء: جزء 6/6 ✓',h:2},{id:'lg3',s:'lng',l:'إنجليزية: موضوع 1',h:1.5},{id:'ph5',s:'phi',l:'فلسفة: مقالة 2 / ج2',h:1.5},{id:'a6',s:'arb',l:'عربية: موضوع 5',h:1},{id:'soc1',s:'soc',l:'جغرافيا: درس 1 / ج1',h:1.5}],miles:[{t:'✅ كهرباء (12h)',sub:'أول محور فيزياء منتهي'}],tip:''},
+{d:7,w:1,ph:1,tasks:[{id:'m7',s:'math',l:'متتاليات: تمرين 13–14',h:1.5},{id:'lg4',s:'lng',l:'إنجليزية: موضوع 2',h:1.5},{id:'ph6',s:'phi',l:'فلسفة: مقالة 2 / ج3 ✓',h:1.5},{id:'a7',s:'arb',l:'عربية: موضوع 6',h:1},{id:'soc2',s:'soc',l:'جغرافيا: درس 1 / ج2 ✓',h:1.5},{id:'is4',s:'isl',l:'إسلامية: درس 4',h:1}],miles:[{t:'✅ فلسفة: مقالة 2',sub:'8 متبقية'},{t:'✅ جغرافيا: درس 1',sub:'8 دروس متبقية'}],tip:'مراجعة الأسبوع الأول قبل النوم — 15 دقيقة كافية'},
+
+{d:8,w:2,ph:1,tasks:[{id:'m8',s:'math',l:'متتاليات: تمرين 15–16',h:1.5},{id:'pa1',s:'phy',l:'أحماض وأسس: جزء 1/10',h:1.8},{id:'lg5',s:'lng',l:'إنجليزية: موضوع 3',h:1.5},{id:'ph7',s:'phi',l:'فلسفة: مقالة 3 / ج1',h:1.5},{id:'a8',s:'arb',l:'عربية: موضوع 7',h:1},{id:'soc3',s:'soc',l:'جغرافيا: درس 2 / ج1',h:1.5}],miles:[],tip:'الأحماض والأسس 18h — أثقل محور فيزياء، موزّع على 10 أجزاء'},
+{d:9,w:2,ph:1,tasks:[{id:'m9',s:'math',l:'متتاليات: تمرين 17–18',h:1.5},{id:'pa2',s:'phy',l:'أحماض وأسس: جزء 2/10',h:1.8},{id:'lg6',s:'lng',l:'إنجليزية: موضوع 4',h:1.5},{id:'ph8',s:'phi',l:'فلسفة: مقالة 3 / ج2',h:1.5},{id:'a9',s:'arb',l:'عربية: موضوع 8',h:1.5},{id:'is5',s:'isl',l:'إسلامية: درس 5',h:1}],miles:[],tip:''},
+{d:10,w:2,ph:1,tasks:[{id:'m10',s:'math',l:'متتاليات: تمرين 19–20',h:1.5},{id:'pa3',s:'phy',l:'أحماض وأسس: جزء 3/10',h:1.8},{id:'lg7',s:'lng',l:'إنجليزية: موضوع 5 ✓',h:1.5},{id:'ph9',s:'phi',l:'فلسفة: مقالة 3 / ج3 ✓',h:1.5},{id:'a10',s:'arb',l:'عربية: موضوع 9',h:1},{id:'soc4',s:'soc',l:'جغرافيا: درس 2 ✓',h:1.5}],miles:[{t:'✅ إنجليزية كاملة 100%',sub:'11.5 ساعة خلف الظهر'},{t:'✅ فلسفة: مقالة 3',sub:'7 متبقية'},{t:'✅ جغرافيا: درس 2',sub:'7 دروس متبقية'}],tip:'إنجليزية منتهية تماماً — وفّرت وقتاً للمواد الأثقل'},
+{d:11,w:2,ph:1,tasks:[{id:'m11',s:'math',l:'متتاليات: تمرين 21–22',h:1.5},{id:'pa4',s:'phy',l:'أحماض وأسس: جزء 4/10',h:1.8},{id:'lf1',s:'lng',l:'فرنسية: دروس جزء 1',h:2},{id:'ph10',s:'phi',l:'فلسفة: مقالة 4 / ج1',h:1.5},{id:'a11',s:'arb',l:'عربية: موضوع 10',h:1},{id:'is6',s:'isl',l:'إسلامية: درس 6',h:1}],miles:[],tip:'ابدأ الفرنسية بنفس إيقاع الإنجليزية'},
+{d:12,w:2,ph:1,tasks:[{id:'m12',s:'math',l:'متتاليات: تمرين 23–24',h:1.5},{id:'pa5',s:'phy',l:'أحماض وأسس: جزء 5/10',h:1.8},{id:'lf2',s:'lng',l:'فرنسية: دروس جزء 2 ✓',h:2},{id:'ph11',s:'phi',l:'فلسفة: مقالة 4 / ج2',h:1.5},{id:'a12',s:'arb',l:'عربية: موضوع 11',h:1}],miles:[{t:'✅ فرنسية: دروس منتهية',sub:'بقيت 5 مواضيع'}],tip:''},
+{d:13,w:2,ph:1,tasks:[{id:'m13',s:'math',l:'متتاليات: تمرين 25–26',h:1.5},{id:'pa6',s:'phy',l:'أحماض وأسس: جزء 6/10',h:1.8},{id:'lf3',s:'lng',l:'فرنسية: موضوع 1',h:1.5},{id:'ph12',s:'phi',l:'فلسفة: مقالة 4 / ج3 ✓',h:1.5},{id:'a13',s:'arb',l:'عربية: موضوع 12',h:1},{id:'is7',s:'isl',l:'إسلامية: درس 7',h:1}],miles:[{t:'✅ فلسفة: مقالة 4',sub:'6 متبقية'}],tip:'4 مقالات من 10 — أنت في وتيرة رائعة'},
+{d:14,w:2,ph:1,tasks:[{id:'m14',s:'math',l:'متتاليات: تمرين 27–30 ✓',h:2.25},{id:'pa7',s:'phy',l:'أحماض وأسس: جزء 7/10',h:1.8},{id:'lf4',s:'lng',l:'فرنسية: موضوع 2',h:1.5},{id:'a14',s:'arb',l:'عربية: موضوع 13',h:1},{id:'soc5',s:'soc',l:'جغرافيا: درس 3 / ج1',h:1.5}],miles:[{t:'✅ متتاليات (22.5h) ✓',sub:'أول محور رياضيات مكتمل'}],tip:'متتاليات منتهية — احتفل ثم استمر فوراً'},
+
+{d:15,w:3,ph:2,tasks:[{id:'hm1',s:'math',l:'احتمالات: تمرين 1–2',h:1.5},{id:'pa8',s:'phy',l:'أحماض وأسس: جزء 8/10',h:1.8},{id:'lf5',s:'lng',l:'فرنسية: موضوع 3',h:1.5},{id:'ph13',s:'phi',l:'فلسفة: مقالة 5 / ج1',h:1.5},{id:'a15',s:'arb',l:'عربية: موضوع 14',h:1},{id:'is8',s:'isl',l:'إسلامية: درس 8',h:1}],miles:[],tip:'أسبوع 3 — الآن الجد الحقيقي يبدأ'},
+{d:16,w:3,ph:2,tasks:[{id:'hm2',s:'math',l:'احتمالات: تمرين 3–4',h:1.5},{id:'pa9',s:'phy',l:'أحماض وأسس: جزء 9/10',h:1.8},{id:'lf6',s:'lng',l:'فرنسية: موضوع 4',h:1.5},{id:'ph14',s:'phi',l:'فلسفة: مقالة 5 / ج2',h:1.5},{id:'a16',s:'arb',l:'عربية: موضوع 15',h:1}],miles:[],tip:''},
+{d:17,w:3,ph:2,tasks:[{id:'hm3',s:'math',l:'احتمالات: تمرين 5–6',h:1.5},{id:'pa10',s:'phy',l:'أحماض وأسس: جزء 10/10 ✓',h:1.8},{id:'lf7',s:'lng',l:'فرنسية: موضوع 5 ✓',h:1.5},{id:'ph15',s:'phi',l:'فلسفة: مقالة 5 / ج3 ✓',h:1.5},{id:'a17',s:'arb',l:'عربية: موضوع 16',h:1},{id:'is9',s:'isl',l:'إسلامية: درس 9',h:1}],miles:[{t:'✅ أحماض وأسس (18h)',sub:'أثقل محور فيزياء منتهي'},{t:'✅ فرنسية كاملة 100%',sub:'اللغتان منتهيتان'},{t:'✅ فلسفة: مقالة 5',sub:'5 متبقية'}],tip:'يوم تاريخي — 3 مهام كبرى في يوم واحد!'},
+{d:18,w:3,ph:2,tasks:[{id:'hm4',s:'math',l:'احتمالات: تمرين 7–8',h:1.5},{id:'nu1',s:'phy',l:'نشاط نووي: جزء 1/9',h:1.5},{id:'ph16',s:'phi',l:'فلسفة: مقالة 6 / ج1',h:1.5},{id:'a18',s:'arb',l:'عربية: موضوع 17–18',h:1.5},{id:'soc6',s:'soc',l:'جغرافيا: درس 3 ✓',h:1.5}],miles:[{t:'✅ لغات أجنبية كاملة',sub:'23 ساعة خلف الظهر'}],tip:'اللغات انتهت نهائياً'},
+{d:19,w:3,ph:2,tasks:[{id:'hm5',s:'math',l:'احتمالات: تمرين 9–10',h:1.5},{id:'nu2',s:'phy',l:'نشاط نووي: جزء 2/9',h:1.5},{id:'ph17',s:'phi',l:'فلسفة: مقالة 6 / ج2',h:1.5},{id:'a19',s:'arb',l:'عربية: موضوع 19',h:1},{id:'is10',s:'isl',l:'إسلامية: درس 10',h:1}],miles:[],tip:''},
+{d:20,w:3,ph:2,tasks:[{id:'hm6',s:'math',l:'احتمالات: تمرين 11–12',h:1.5},{id:'nu3',s:'phy',l:'نشاط نووي: جزء 3/9',h:1.5},{id:'ph18',s:'phi',l:'فلسفة: مقالة 6 / ج3 ✓',h:1.5},{id:'a20',s:'arb',l:'عربية: موضوع 20–21',h:1.5},{id:'soc7',s:'soc',l:'جغرافيا: درس 4 / ج1',h:1.5}],miles:[{t:'✅ فلسفة: مقالة 6',sub:'4 متبقية'}],tip:''},
+{d:21,w:3,ph:2,tasks:[{id:'hm7',s:'math',l:'احتمالات: تمرين 13–15',h:2.25},{id:'nu4',s:'phy',l:'نشاط نووي: جزء 4/9',h:1.5},{id:'ph19',s:'phi',l:'فلسفة: مقالة 7 / ج1',h:1.5},{id:'a21',s:'arb',l:'عربية: موضوع 22',h:1},{id:'is11',s:'isl',l:'إسلامية: درس 11',h:1}],miles:[],tip:'مراجعة الأسبوع الثالث قبل النوم'},
+
+{d:22,w:4,ph:2,tasks:[{id:'hm8',s:'math',l:'احتمالات: تمرين 16–17',h:1.5},{id:'nu5',s:'phy',l:'نشاط نووي: جزء 5/9',h:1.5},{id:'ph20',s:'phi',l:'فلسفة: مقالة 7 / ج2',h:1.5},{id:'a22',s:'arb',l:'عربية: موضوع 23',h:1},{id:'soc8',s:'soc',l:'جغرافيا: درس 4 ✓',h:1.5}],miles:[{t:'✅ جغرافيا: درس 4',sub:'5 دروس متبقية'}],tip:''},
+{d:23,w:4,ph:2,tasks:[{id:'hm9',s:'math',l:'احتمالات: تمرين 18–19',h:1.5},{id:'nu6',s:'phy',l:'نشاط نووي: جزء 6/9',h:1.5},{id:'ph21',s:'phi',l:'فلسفة: مقالة 7 / ج3 ✓',h:1.5},{id:'a23',s:'arb',l:'عربية: موضوع 24',h:1},{id:'soc9',s:'soc',l:'جغرافيا: درس 5 / ج1',h:1.5},{id:'is12',s:'isl',l:'إسلامية: درس 12',h:1}],miles:[{t:'✅ فلسفة: مقالة 7',sub:'3 متبقية'}],tip:'7 من 10 مقالات — لم يبق إلا 3!'},
+{d:24,w:4,ph:2,tasks:[{id:'hm10',s:'math',l:'احتمالات: تمرين 20–21',h:1.5},{id:'nu7',s:'phy',l:'نشاط نووي: جزء 7/9',h:1.5},{id:'ph22',s:'phi',l:'فلسفة: مقالة 8 / ج1',h:1.5},{id:'a24',s:'arb',l:'عربية: موضوع 25–26',h:1.5},{id:'th1',s:'soc',l:'تاريخ: حرب باردة ج1',h:1}],miles:[],tip:'ابدأ تاريخ الحرب الباردة — 4h على 4 أيام'},
+{d:25,w:4,ph:2,tasks:[{id:'hm11',s:'math',l:'احتمالات: تمرين 22–23',h:1.5},{id:'nu8',s:'phy',l:'نشاط نووي: جزء 8/9',h:1.5},{id:'ph23',s:'phi',l:'فلسفة: مقالة 8 / ج2',h:1.5},{id:'a25',s:'arb',l:'عربية: موضوع 27',h:1},{id:'th2',s:'soc',l:'تاريخ: حرب باردة ج2',h:1},{id:'is13',s:'isl',l:'إسلامية: درس 13',h:1}],miles:[],tip:''},
+{d:26,w:4,ph:2,tasks:[{id:'hm12',s:'math',l:'احتمالات: تمرين 24–25',h:1.5},{id:'nu9',s:'phy',l:'نشاط نووي: جزء 9/9 ✓',h:1.5},{id:'ph24',s:'phi',l:'فلسفة: مقالة 8 / ج3 ✓',h:1.5},{id:'a26',s:'arb',l:'عربية: موضوع 28–29',h:1.5},{id:'th3',s:'soc',l:'تاريخ: حرب باردة ج3',h:1},{id:'soc10',s:'soc',l:'جغرافيا: درس 5 ✓',h:1}],miles:[{t:'✅ نشاط نووي (13h)',sub:'الفيزياء شبه مكتملة'},{t:'✅ فلسفة: مقالة 8',sub:'مقالتان فقط متبقيتان'},{t:'✅ جغرافيا: درس 5',sub:'4 دروس متبقية'}],tip:'يوم ممتاز — 3 إنجازات دفعة واحدة'},
+{d:27,w:4,ph:2,tasks:[{id:'hm13',s:'math',l:'احتمالات: تمرين 26–28',h:2.25},{id:'ph25',s:'phi',l:'فلسفة: مقالة 9 / ج1',h:1.5},{id:'a27',s:'arb',l:'عربية: موضوع 30',h:1},{id:'th4',s:'soc',l:'تاريخ: حرب باردة ج4 ✓',h:1},{id:'is14',s:'isl',l:'إسلامية: درس 14',h:1}],miles:[{t:'✅ تاريخ: الحرب الباردة (4h)',sub:''}],tip:''},
+{d:28,w:4,ph:2,tasks:[{id:'hm14',s:'math',l:'احتمالات: تمرين 29–30 ✓',h:1.5},{id:'ph26',s:'phi',l:'فلسفة: مقالة 9 / ج2',h:1.5},{id:'a28',s:'arb',l:'عربية: موضوع 31–32',h:1.5},{id:'rev1',s:'soc',l:'ثورة جزائرية: جزء 1',h:1.5},{id:'soc11',s:'soc',l:'جغرافيا: درس 6 / ج1',h:1.5}],miles:[{t:'✅ احتمالات (22.5h)',sub:'محوران رياضيات منتهيان من 4'}],tip:'احتمالات منتهية — نصف الرياضيات جاهز!'},
+
+{d:29,w:5,ph:3,tasks:[{id:'cm1',s:'math',l:'أعداد مركبة: تمرين 1–2',h:2},{id:'ph27',s:'phi',l:'فلسفة: مقالة 9 / ج3 ✓',h:1.5},{id:'a29',s:'arb',l:'عربية: موضوع 33',h:1},{id:'rev2',s:'soc',l:'ثورة جزائرية: جزء 2',h:1.5},{id:'is15',s:'isl',l:'إسلامية: درس 15',h:1}],miles:[{t:'✅ فلسفة: مقالة 9',sub:'مقالة أخيرة متبقية'}],tip:'الأعداد المركبة أصعب محور رياضيات — كل تمرين ساعة كاملة'},
+{d:30,w:5,ph:3,tasks:[{id:'cm2',s:'math',l:'أعداد مركبة: تمرين 3–4',h:2},{id:'ph28',s:'phi',l:'فلسفة: مقالة 10 / ج1',h:1.5},{id:'a30',s:'arb',l:'عربية: موضوع 34',h:1},{id:'rev3',s:'soc',l:'ثورة جزائرية: جزء 3 ✓',h:1.5},{id:'soc12',s:'soc',l:'جغرافيا: درس 6 ✓',h:1}],miles:[{t:'✅ تاريخ: الثورة الجزائرية',sub:'التاريخ كامل!'},{t:'✅ جغرافيا: درس 6',sub:'3 دروس متبقية'}],tip:'التاريخ كله منتهي — اقرأ التواريخ يومياً فقط من الآن'},
+{d:31,w:5,ph:3,tasks:[{id:'cm3',s:'math',l:'أعداد مركبة: تمرين 5–6',h:2},{id:'ph29',s:'phi',l:'فلسفة: مقالة 10 / ج2',h:1.5},{id:'a31',s:'arb',l:'عربية: موضوع 35',h:1},{id:'rph1',s:'phi',l:'مراجعة فلسفة: ج1/5',h:1},{id:'is16',s:'isl',l:'إسلامية: درس 16',h:1}],miles:[],tip:''},
+{d:32,w:5,ph:3,tasks:[{id:'cm4',s:'math',l:'أعداد مركبة: تمرين 7–8',h:2},{id:'ph30',s:'phi',l:'فلسفة: مقالة 10 / ج3 ✓',h:1.5},{id:'a32',s:'arb',l:'عربية: موضوع 36',h:1},{id:'rph2',s:'phi',l:'مراجعة فلسفة: ج2/5',h:1},{id:'soc13',s:'soc',l:'جغرافيا: درس 7 / ج1',h:1.5}],miles:[{t:'✅ فلسفة: مقالة 10 ✓',sub:'10/10 مقالات مكتملة!'}],tip:'10 مقالات منتهية! الفلسفة شبه جاهزة — بقيت المراجعة فقط'},
+{d:33,w:5,ph:3,tasks:[{id:'cm5',s:'math',l:'أعداد مركبة: تمرين 9–10',h:2},{id:'rph3',s:'phi',l:'مراجعة فلسفة: ج3/5',h:1},{id:'a33',s:'arb',l:'عربية: موضوع 37',h:1},{id:'soc14',s:'soc',l:'جغرافيا: درس 7 ✓',h:1.5},{id:'is17',s:'isl',l:'إسلامية: درس 17',h:1}],miles:[{t:'✅ جغرافيا: درس 7',sub:'2 دروس متبقية'}],tip:''},
+{d:34,w:5,ph:3,tasks:[{id:'cm6',s:'math',l:'أعداد مركبة: تمرين 11–12',h:2},{id:'rph4',s:'phi',l:'مراجعة فلسفة: ج4/5',h:1},{id:'a34',s:'arb',l:'عربية: موضوع 38',h:1},{id:'rvs1',s:'rev',l:'مراجعة اجتماعيات سريعة',h:1.5}],miles:[],tip:''},
+{d:35,w:5,ph:3,tasks:[{id:'cm7',s:'math',l:'أعداد مركبة: تمرين 13–14',h:2},{id:'rph5',s:'phi',l:'مراجعة فلسفة: ج5/5 ✓',h:1},{id:'a35',s:'arb',l:'عربية: موضوع 39–40',h:1.5},{id:'is18',s:'isl',l:'إسلامية: درس 18',h:1}],miles:[{t:'✅ فلسفة كاملة (35h)',sub:'4 مواد منتهية بالكامل'}],tip:'فلسفة منتهية 100%! يوم تاريخي'},
+
+{d:36,w:6,ph:3,tasks:[{id:'cm8',s:'math',l:'أعداد مركبة: تمرين 15–16',h:2},{id:'a36',s:'arb',l:'عربية: موضوع 41',h:1},{id:'rvs2',s:'rev',l:'مراجعة اجتماعيات عميق',h:2}],miles:[],tip:'استغل الوقت الفائض للمراجعة العميقة'},
+{d:37,w:6,ph:3,tasks:[{id:'cm9',s:'math',l:'أعداد مركبة: تمرين 17–18',h:2},{id:'a37',s:'arb',l:'عربية: موضوع 42',h:1},{id:'rvs3',s:'rev',l:'مراجعة تاريخ عميق',h:2},{id:'is19',s:'isl',l:'إسلامية: درس 19',h:1}],miles:[],tip:''},
+{d:38,w:6,ph:3,tasks:[{id:'cm10',s:'math',l:'أعداد مركبة: تمرين 19–20',h:2},{id:'a38',s:'arb',l:'عربية: موضوع 43',h:1},{id:'rvs4',s:'rev',l:'مراجعة جغرافيا عميق',h:2},{id:'soc15',s:'soc',l:'جغرافيا: درس 8 / ج1',h:1.5}],miles:[],tip:''},
+{d:39,w:6,ph:3,tasks:[{id:'cm11',s:'math',l:'أعداد مركبة: تمرين 21–22',h:2},{id:'a39',s:'arb',l:'عربية: موضوع 44',h:1},{id:'rvs5',s:'rev',l:'مراجعة فلسفة عميق',h:2},{id:'is20',s:'isl',l:'إسلامية: درس 20',h:1}],miles:[],tip:''},
+{d:40,w:6,ph:3,tasks:[{id:'cm12',s:'math',l:'أعداد مركبة: تمرين 23–24',h:2},{id:'a40',s:'arb',l:'عربية: موضوع 45–46',h:1.5},{id:'rvs6',s:'rev',l:'مراجعة إسلامية عميق',h:2},{id:'soc16',s:'soc',l:'جغرافيا: درس 8 ✓',h:1}],miles:[{t:'✅ جغرافيا: درس 8',sub:'درس أخير متبق'}],tip:''},
+{d:41,w:6,ph:3,tasks:[{id:'cm13',s:'math',l:'أعداد مركبة: تمرين 25–26',h:2},{id:'a41',s:'arb',l:'عربية: موضوع 47',h:1},{id:'rvs7',s:'rev',l:'مراجعة متتاليات+احتمالات',h:2},{id:'is21',s:'isl',l:'إسلامية: درس 21',h:1}],miles:[],tip:''},
+{d:42,w:6,ph:3,tasks:[{id:'cm14',s:'math',l:'أعداد مركبة: تمرين 27–30 ✓',h:3},{id:'a42',s:'arb',l:'عربية: موضوع 48',h:1},{id:'soc17',s:'soc',l:'جغرافيا: درس 9 ✓',h:2.5}],miles:[{t:'✅ أعداد مركبة (30h)',sub:'أصعب محور رياضيات منتهي'},{t:'✅ جغرافيا كاملة (9 دروس)',sub:'الاجتماعيات كاملة 100%'}],tip:'أعداد مركبة منتهية! والجغرافيا كاملة! يوم استثنائي'},
+
+{d:43,w:7,ph:4,tasks:[{id:'fn1',s:'math',l:'الدوال: دالة 1–2',h:2.5},{id:'rp1',s:'phy',l:'مراجعة فيزياء شاملة: ج1/10',h:1.7},{id:'a43',s:'arb',l:'عربية: موضوع 49',h:1},{id:'is22',s:'isl',l:'إسلامية: درس 22',h:1}],miles:[],tip:'الدوال آخر محور رياضيات — 15 دالة × 75 دقيقة'},
+{d:44,w:7,ph:4,tasks:[{id:'fn2',s:'math',l:'الدوال: دالة 3–4',h:2.5},{id:'rp2',s:'phy',l:'مراجعة فيزياء شاملة: ج2/10',h:1.7},{id:'a44',s:'arb',l:'عربية: موضوع 50',h:1}],miles:[],tip:''},
+{d:45,w:7,ph:4,tasks:[{id:'fn3',s:'math',l:'الدوال: دالة 5–6',h:2.5},{id:'rp3',s:'phy',l:'مراجعة فيزياء شاملة: ج3/10',h:1.7},{id:'a45',s:'arb',l:'عربية: موضوع 51',h:1},{id:'is23',s:'isl',l:'إسلامية: درس 23',h:1}],miles:[],tip:''},
+{d:46,w:7,ph:4,tasks:[{id:'fn4',s:'math',l:'الدوال: دالة 7–8',h:2.5},{id:'rp4',s:'phy',l:'مراجعة فيزياء شاملة: ج4/10',h:1.7},{id:'a46',s:'arb',l:'عربية: موضوع 52',h:1}],miles:[],tip:''},
+{d:47,w:7,ph:4,tasks:[{id:'fn5',s:'math',l:'الدوال: دالة 9–10',h:2.5},{id:'rp5',s:'phy',l:'مراجعة فيزياء شاملة: ج5/10',h:1.7},{id:'a47',s:'arb',l:'عربية: موضوع 53',h:1},{id:'is24',s:'isl',l:'إسلامية: درس 24',h:1}],miles:[],tip:''},
+{d:48,w:7,ph:4,tasks:[{id:'fn6',s:'math',l:'الدوال: دالة 11–12',h:2.5},{id:'rp6',s:'phy',l:'مراجعة فيزياء شاملة: ج6/10',h:1.7},{id:'a48',s:'arb',l:'عربية: موضوع 54–55',h:1.5}],miles:[],tip:''},
+{d:49,w:7,ph:4,tasks:[{id:'fn7',s:'math',l:'الدوال: دالة 13–15 ✓',h:2.5},{id:'rp7',s:'phy',l:'مراجعة فيزياء شاملة: ج7/10',h:1.7},{id:'a49',s:'arb',l:'عربية: موضوع 56',h:1},{id:'is25',s:'isl',l:'إسلامية: درس 25',h:1}],miles:[{t:'✅ الدوال (18.75h)',sub:'رياضيات كاملة 100%!'},{t:'✅ رياضيات: كل المحاور الأربعة',sub:'93.75 ساعة منجزة'}],tip:'رياضيات منتهية!! أعظم محور في بكالوريا العلوم'},
+
+{d:50,w:8,ph:4,tasks:[{id:'rvm1',s:'rev',l:'مراجعة رياضيات: متتاليات',h:2},{id:'rp8',s:'phy',l:'مراجعة فيزياء شاملة: ج8/10',h:1.7},{id:'a50',s:'arb',l:'عربية: موضوع 57',h:1}],miles:[],tip:'المراجعة = حل تمارين جديدة لم تحلها — لا مجرد قراءة'},
+{d:51,w:8,ph:4,tasks:[{id:'rvm2',s:'rev',l:'مراجعة رياضيات: احتمالات',h:2},{id:'rp9',s:'phy',l:'مراجعة فيزياء شاملة: ج9/10',h:1.7},{id:'a51',s:'arb',l:'عربية: موضوع 58–59',h:1.5},{id:'is26',s:'isl',l:'إسلامية: درس 26',h:1}],miles:[],tip:''},
+{d:52,w:8,ph:4,tasks:[{id:'rvm3',s:'rev',l:'مراجعة رياضيات: أعداد مركبة',h:2},{id:'rp10',s:'phy',l:'مراجعة فيزياء شاملة: ج10/10 ✓',h:1.7},{id:'a52',s:'arb',l:'عربية: موضوع 60',h:1}],miles:[{t:'✅ مراجعة فيزياء شاملة (17h)',sub:'فيزياء 100% مكتملة'}],tip:'فيزياء 100% — المادة الثانية تنتهي بالكامل'},
+{d:53,w:8,ph:4,tasks:[{id:'rvm4',s:'rev',l:'مراجعة رياضيات: الدوال',h:2},{id:'rvp1',s:'rev',l:'نقاط ضعف فيزياء',h:2},{id:'a53',s:'arb',l:'عربية: موضوع 61',h:1},{id:'is27',s:'isl',l:'إسلامية: درس 27',h:1}],miles:[],tip:'حدد أضعف 3 نقاط في كل مادة وركّز عليها فقط'},
+{d:54,w:8,ph:4,tasks:[{id:'rvm5',s:'rev',l:'مراجعة رياضيات شاملة',h:3},{id:'rvph1',s:'rev',l:'مراجعة فلسفة: خطط 5 مقالات',h:2},{id:'a54',s:'arb',l:'عربية: موضوع 62',h:1}],miles:[],tip:''},
+{d:55,w:8,ph:4,tasks:[{id:'rvm6',s:'rev',l:'نقاط ضعف رياضيات',h:2},{id:'rvph2',s:'rev',l:'مراجعة فلسفة: 5 مقالات أخرى',h:2},{id:'a55',s:'arb',l:'عربية: موضوع 63',h:1},{id:'is28',s:'isl',l:'إسلامية: درس 28',h:1}],miles:[],tip:''},
+{d:56,w:8,ph:4,tasks:[{id:'rvs8',s:'rev',l:'مراجعة اجتماعيات شاملة',h:2},{id:'rva1',s:'rev',l:'مراجعة عربية: أساليب مهمة',h:2},{id:'a56',s:'arb',l:'عربية: موضوع 64',h:1},{id:'rvi1',s:'isl',l:'مراجعة إسلامية شاملة',h:2}],miles:[],tip:''},
+
+{d:57,w:9,ph:4,tasks:[{id:'rvf1',s:'rev',l:'مراجعة رياضيات مكثفة',h:3},{id:'rvp2',s:'rev',l:'مراجعة فيزياء نقاط الضعف',h:2},{id:'a57',s:'arb',l:'عربية: موضوع 65–68',h:2.5},{id:'is29',s:'isl',l:'إسلامية: درس 29',h:1}],miles:[],tip:''},
+{d:58,w:9,ph:4,tasks:[{id:'rvf2',s:'rev',l:'مراجعة فلسفة+عربية مكثفة',h:3},{id:'rvs9',s:'rev',l:'مراجعة اجتماعيات',h:2},{id:'a58',s:'arb',l:'عربية: موضوع 69–70',h:1.5}],miles:[],tip:''},
+{d:59,w:9,ph:4,tasks:[{id:'rvall',s:'rev',l:'مراجعة خفيفة — كل المواد',h:3},{id:'a59',s:'arb',l:'عربية: موضوع 71',h:1},{id:'is30',s:'isl',l:'إسلامية: درس 30 ✓',h:1}],miles:[{t:'✅ إسلامية: 30 درس كاملة',sub:''}],tip:''},
+{d:60,w:9,ph:4,tasks:[{id:'rffinal',s:'rev',l:'يوم التثبيت — مراجعة ذاتية خفيفة',h:2},{id:'a60',s:'arb',l:'عربية: موضوع 72 ✓',h:1}],miles:[{t:'✅ عربية: 72 موضوع',sub:'كل المواد مكتملة 100%'}],tip:'60 يوم عمل — الآن حصاد. ثق بنفسك وارتح الليلة'},
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE & STORAGE
+// ═══════════════════════════════════════════════════════
+let currentDay = 1;
+const STORE_KEY = 'adel_bac_2025';
+
+function loadState(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY))||{}; }catch(e){ return {}; } }
+function saveState(s){ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
+
+let state = loadState();
+// state[dayIdx][taskId] = true/false
+// state.fixed[dayIdx][fixedId] = true/false
+
+function isTaskDone(dayIdx, taskId){ return !!(state[dayIdx]||{})[taskId]; }
+function isFixedDone(dayIdx, fixedId){ return !!((state.fixed||{})[dayIdx]||{})[fixedId]; }
+function toggleTask(dayIdx, taskId){
+  if(!state[dayIdx]) state[dayIdx]={};
+  state[dayIdx][taskId] = !state[dayIdx][taskId];
+  saveState(state);
+}
+function toggleFixed(dayIdx, fixedId){
+  if(!state.fixed) state.fixed={};
+  if(!state.fixed[dayIdx]) state.fixed[dayIdx]={};
+  state.fixed[dayIdx][fixedId] = !state.fixed[dayIdx][fixedId];
+  saveState(state);
+}
+
+// ═══════════════════════════════════════════════════════
+// COMPUTE STATS
+// ═══════════════════════════════════════════════════════
+function dayCompletion(dayIdx){
+  const day = DAYS[dayIdx];
+  if(!day) return {done:0,total:0,pct:0};
+  const total = day.tasks.length;
+  const done = day.tasks.filter(t=>isTaskDone(dayIdx,t.id)).length;
+  return {done, total, pct: total?Math.round(done/total*100):0};
+}
+
+function allTaskStats(){
+  let total=0, done=0;
+  DAYS.forEach((day,i)=>{ total+=day.tasks.length; done+=day.tasks.filter(t=>isTaskDone(i,t.id)).length; });
+  return {total, done, pct: total?Math.round(done/total*100):0};
+}
+
+function subjectStats(){
+  const acc = {};
+  Object.keys(S).forEach(k=>acc[k]={done:0,total:0});
+  acc.rev = {done:0,total:0};
+  DAYS.forEach((day,i)=>{
+    day.tasks.forEach(t=>{
+      if(acc[t.s]){
+        acc[t.s].total++;
+        if(isTaskDone(i,t.id)) acc[t.s].done++;
+      }
+    });
+  });
+  return acc;
+}
+
+function streakCount(){
+  let streak=0;
+  const today = currentDay-1;
+  for(let i=today;i>=0;i--){
+    const c = dayCompletion(i);
+    if(c.pct===100) streak++;
+    else break;
+  }
+  return streak;
+}
+
+function isDayDone(dayIdx){ return dayCompletion(dayIdx).pct===100; }
+function isDayPartial(dayIdx){ const c=dayCompletion(dayIdx); return c.done>0&&c.pct<100; }
+
+// ═══════════════════════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════════════════════
+let overviewOpen = false;
+function toggleOverview(){
+  overviewOpen = !overviewOpen;
+  document.getElementById('overview').classList.toggle('open', overviewOpen);
+  if(overviewOpen) renderOverview();
+}
+function renderOverview(){
+  const grid = document.getElementById('ov-grid');
+  grid.innerHTML = DAYS.map((day,i)=>{
+    let cls = '';
+    if(i+1===currentDay) cls='cur';
+    else if(isDayDone(i)) cls='done';
+    else if(isDayPartial(i)) cls='partial';
+    return `<div class="ov-day ${cls}" onclick="goDay(${i+1});toggleOverview()">${i+1}</div>`;
+  }).join('');
+}
+document.getElementById('overview').addEventListener('click',e=>{ if(e.target===e.currentTarget) toggleOverview(); });
+
+// ═══════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════
+function goDay(d){
+  d = Math.max(1, Math.min(60, d));
+  currentDay = d;
+  renderAll();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+const FIXED_TASKS = [
+  {id:'fx_dates',i:'📅',l:'قراءة التواريخ التاريخية (15 دقيقة)'},
+  {id:'fx_isl',  i:'☪️',l:'مراجعة إسلامية (10 دقائق)'},
+  {id:'fx_chars',i:'🧑‍💼',l:'شخصية تاريخية × 1'},
+  {id:'fx_terms1',i:'📝',l:'مصطلحات تاريخ × 2'},
+  {id:'fx_terms2',i:'🌍',l:'مصطلحات جغرافيا × 2'},
+];
+
+function renderAll(){
+  const dayIdx = currentDay - 1;
+  const day = DAYS[dayIdx];
+  const ph = PHASES[day.ph];
+  const comp = dayCompletion(dayIdx);
+
+  // Header nav
+  document.getElementById('day-display').textContent = `يوم ${currentDay} / 60`;
+  document.getElementById('prev-btn').disabled = currentDay===1;
+  document.getElementById('next-btn').disabled = currentDay===60;
+
+  // Header stats
+  const allStats = allTaskStats();
+  document.getElementById('total-pct').textContent = allStats.pct+'%';
+  document.getElementById('streak-num').textContent = streakCount();
+
+  // Sidebar — progress
+  renderProgress(allStats);
+
+  // Sidebar — info
+  document.getElementById('info-week').textContent = `أسبوع ${day.w}`;
+  document.getElementById('info-phase').innerHTML = `<span style="color:${ph.c}">${ph.l}</span>`;
+  const dayHrs = day.tasks.reduce((a,t)=>a+t.h,0).toFixed(1);
+  document.getElementById('info-hrs').textContent = dayHrs + ' ساعة';
+  document.getElementById('info-rem').textContent = (comp.total - comp.done) + ' مهمة';
+  const banner = document.getElementById('phase-banner');
+  banner.style.background = ph.c+'18';
+  banner.style.border = `1px solid ${ph.c}30`;
+  banner.style.color = ph.c;
+  banner.innerHTML = `${ph.l} · الأسبوع ${day.w}`;
+
+  // Sidebar — fixed tasks
+  renderFixed(dayIdx);
+
+  // Main content
+  renderDayContent(dayIdx, day, ph, comp);
+}
+
+function renderProgress(allStats){
+  // Ring
+  const pct = allStats.pct;
+  const circ = 169.6;
+  const offset = circ - (circ * pct / 100);
+  document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  document.getElementById('ring-pct').textContent = pct+'%';
+  document.getElementById('overall-done').textContent = allStats.done;
+  document.getElementById('overall-total').textContent = `من ${allStats.total}`;
+
+  // Subject bars
+  const ss = subjectStats();
+  const el = document.getElementById('sub-progress');
+  el.innerHTML = Object.entries(S).map(([k,v])=>{
+    const d = ss[k]||{done:0,total:0};
+    const p = d.total ? Math.round(d.done/d.total*100) : 0;
+    return `<div class="sub-row">
+      <div class="sub-dot" style="background:${v.c}"></div>
+      <div class="sub-name">${v.i} ${v.l}</div>
+      <div class="sub-bar"><div class="sub-fill" style="background:${v.c};width:${p}%"></div></div>
+      <div class="sub-pct">${p}%</div>
+    </div>`;
+  }).join('');
+}
+
+function renderFixed(dayIdx){
+  const el = document.getElementById('fixed-tasks');
+  el.innerHTML = FIXED_TASKS.map(f=>{
+    const done = isFixedDone(dayIdx, f.id);
+    return `<div class="fix-task ${done?'done':''}" onclick="clickFixed(${dayIdx},'${f.id}')">
+      <div class="fix-check">${done?'✓':''}</div>
+      <div class="fix-label">${f.i} ${f.l}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDayContent(dayIdx, day, ph, comp){
+  const el = document.getElementById('day-content');
+  let html = '';
+
+  // Day header
+  html += `<div class="day-header anim" style="--phase-col:${ph.c}">
+    <div class="dh-left">
+      <div class="day-num">${day.d}</div>
+      <div class="day-label">اليوم</div>
+    </div>
+    <div class="dh-center">
+      <div class="week-label">أسبوع ${day.w} · ${ph.l}</div>
+      <div class="phase-label">${WEEKS_META[day.w-1].l}</div>
+    </div>
+    <div class="dh-right">
+      <div class="day-pct-big" id="day-pct">${comp.pct}%</div>
+      <div class="day-pct-label">${comp.done}/${comp.total} مهمة</div>
+    </div>
+  </div>
+  <div class="day-pbar" style="background:rgba(255,255,255,.04);border-radius:2px;height:3px;margin:-12px 0 4px">
+    <div class="day-pfill" id="day-pfill" style="--phase-col:${ph.c};width:${comp.pct}%;height:100%;background:${ph.c};border-radius:2px;transition:width .6s"></div>
+  </div>`;
+
+  // Group tasks by subject
+  const groups = {};
+  day.tasks.forEach(t=>{ if(!groups[t.s]) groups[t.s]=[]; groups[t.s].push(t); });
+
+  Object.entries(groups).forEach(([sk, tasks])=>{
+    const subj = S[sk];
+    const gHrs = tasks.reduce((a,t)=>a+t.h,0).toFixed(1);
+    const gDone = tasks.filter(t=>isTaskDone(dayIdx,t.id)).length;
+    html += `<div class="task-group anim">
+      <div class="tg-head" style="border-right:3px solid ${subj.c}">
+        <div class="tg-icon">${subj.i}</div>
+        <div class="tg-name" style="color:${subj.c}">${subj.l}</div>
+        <div class="tg-count">${gDone}/${tasks.length}</div>
+        <div class="tg-hrs" style="color:${subj.c}">${gHrs}h</div>
+      </div>
+      ${tasks.map(t=>{
+        const done = isTaskDone(dayIdx, t.id);
+        return `<div class="task-item ${done?'done':''}" onclick="clickTask(${dayIdx},'${t.id}')" style="color:${subj.c}">
+          <div class="task-check">${done?'✓':''}</div>
+          <div class="task-body">
+            <div class="tn">${t.l}</div>
+            <div class="th">${subj.l} · ${t.h}h</div>
+          </div>
+          <div class="task-hrs">${t.h}h</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  });
+
+  // Milestones
+  if(day.miles.length){
+    day.miles.forEach(m=>{
+      html += `<div class="milestone anim">
+        <div class="ms-icon">🏆</div>
+        <div>
+          <div class="ms-text">${m.t}</div>
+          ${m.sub?`<div class="ms-sub">${m.sub}</div>`:''}
+        </div>
+      </div>`;
+    });
+  }
+
+  // Tip
+  if(day.tip){
+    html += `<div class="tip-box anim">${day.tip}</div>`;
+  }
+
+  // If all done — complete screen
+  if(comp.pct===100 && comp.total>0){
+    html += `<div class="complete-screen anim">
+      <div class="confetti">🎉</div>
+      <h2>أحسنت! اليوم مكتمل</h2>
+      <p>كل مهام اليوم ${day.d} منجزة — ${comp.total} مهمة</p>
+    </div>`;
+  }
+
+  // Next day
+  if(currentDay < 60){
+    html += `<button class="next-day-btn anim" onclick="goDay(${currentDay+1})">
+      انتقل لليوم ${currentDay+1} ←
+    </button>`;
+  } else {
+    html += `<div class="complete-screen anim" style="border-color:rgba(255,209,102,.3)">
+      <div class="confetti" style="animation:none;font-size:3rem">🎓</div>
+      <h2 style="color:var(--fix)">60 يوم اكتملت!</h2>
+      <p>عادل جاهز للبكالوريا — هذا عمل استثنائي</p>
+    </div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+const WEEKS_META = [
+  {l:'أسبوع 1 — الانطلاقة القوية'},
+  {l:'أسبوع 2 — بناء الزخم'},
+  {l:'أسبوع 3 — دخول التعمق'},
+  {l:'أسبوع 4 — قمة التعمق'},
+  {l:'أسبوع 5 — مرحلة الإنهاء'},
+  {l:'أسبوع 6 — إنهاء المحاور الكبرى'},
+  {l:'أسبوع 7 — الدوال والمراجعة'},
+  {l:'أسبوع 8 — المراجعة المركزة'},
+  {l:'أيام التثبيت النهائية'},
+];
+
+// ═══════════════════════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════════════════════
+function clickTask(dayIdx, taskId){
+  toggleTask(dayIdx, taskId);
+  const wasComplete = dayCompletion(dayIdx).pct===100;
+  renderAll();
+  const comp = dayCompletion(dayIdx);
+  if(comp.pct===100) showToast('🎉 اليوم مكتمل! ممتاز يا عادل');
+  else if(!isTaskDone(dayIdx,taskId)) {}
+  else showToast('✅ مهمة منجزة');
+}
+
+function clickFixed(dayIdx, fixedId){
+  toggleFixed(dayIdx, fixedId);
+  renderFixed(dayIdx);
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════════════════════════
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowLeft' && currentDay<60) goDay(currentDay+1);
+  if(e.key==='ArrowRight' && currentDay>1) goDay(currentDay-1);
+  if(e.key==='Escape' && overviewOpen) toggleOverview();
+});
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+renderAll();
+</script>
+</body>
+</html>
