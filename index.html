@@ -6,6 +6,39 @@
 <title>نظام مهام عادل — بكالوريا 2025</title>
 <link href="./نظام مهام عادل — بكالوريا 2025_files/css2" rel="stylesheet">
 <style>
+/* أنيميشن عند الضغط على الزر */
+.hd-btn-glow:active {
+    transform: scale(0.9) rotate(-2deg);
+    transition: 0.1s;
+}
+
+/* تمييز المهام المتداركة داخل القائمة */
+[data-catchup="true"] {
+    border-left: 5px solid #2DD4A0 !important; /* خط أخضر جانبي */
+    background: rgba(45, 212, 160, 0.08) !important;
+    animation: fadeInTask 0.6s ease;
+}
+
+@keyframes fadeInTask {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* أنيميشن بسيط لظهور المهام الجديدة */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.task-item.catchup-animation {
+    animation: slideIn 0.5s ease forwards;
+    border-right: 3px solid #2DD4A0; /* تمييز مهام الروطار بخط جانبي */
+}
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#07070F;--s1:#0D0D1C;--s2:#111128;--s3:#16163A;
@@ -2230,11 +2263,67 @@ function exitExamMode() {
   clearInterval(examInterval);
   document.getElementById('exam-overlay').style.display = 'none';
 }
-
-// التدارك الذكي
+// نظام التدارك الذكي المطور (V2)
 function runCatchup() {
-  showToast("جاري تحليل المهام الفائتة وتوزيعها...");
-  // هنا يتم إضافة المنطق الخاص بنقل المهام غير المكتملة للأيام التالية
+    const todayIdx = currentDay - 1; // فهرس اليوم الحالي
+    let pendingTasks = [];
+
+    // 1. جرد المهام المتراكمة (الروطار) من الأيام السابقة
+    for (let i = 0; i < todayIdx; i++) {
+        const day = DAYS[i];
+        if (!day || !day.tasks) continue;
+        
+        day.tasks.forEach(task => {
+            // نتحقق إذا كانت المهمة لم تكتمل بعد
+            if (!isTaskDone(i, task.id)) {
+                // نأخذ نسخة من المهمة مع حفظ بيانات المادة الأصلية
+                pendingTasks.push({ ...task, originalDay: i + 1 });
+            }
+        });
+    }
+
+    // 2. التحقق من وجود مهام (إذا كان الجدول نظيفاً)
+    if (pendingTasks.length === 0) {
+        showToast("لا توجد مهام متأخرة. جدولك نظيف تماماً! ✨");
+        return;
+    }
+
+    // 3. الرسالة التفاعلية المخصصة التي طلبتها
+    const confirmMessage = `لديك ${pendingTasks.length} مهمة متأخرة.\nهل تريد توزيعها على الأيام القادمة بشكل متوازن؟`;
+    
+    if (confirm(confirmMessage)) {
+        // 4. توزيع المهام على الـ 7 أيام القادمة
+        pendingTasks.forEach((task, index) => {
+            // توزيع عادل: كل مهمة تذهب لليوم التالي بالترتيب
+            const targetDayIdx = todayIdx + (index % 7); 
+            
+            if (DAYS[targetDayIdx]) {
+                const catchupTask = {
+                    ...task,
+                    id: 'rcp_' + Date.now() + '_' + index, // معرف فريد جديد لمنع التداخل
+                    l: task.l + " ⚠️ (مُتداركة)", // تمييز الاسم
+                    isCatchup: true // علامة للتنسيق البصري
+                };
+                
+                // إضافة المهمة المتأخرة إلى قائمة مهام اليوم المستهدف
+                DAYS[targetDayIdx].tasks.push(catchupTask);
+            }
+        });
+
+        // 5. حفظ البيانات الجديدة في الذاكرة (LocalStorage)
+        saveState();
+
+        // 6. تحديث الواجهة فوراً
+        renderDay(currentDay); 
+        
+        // رسالة نجاح مع عدد المهام
+        showToast(`🚀 تم تدارك ${pendingTasks.length} مهمة بنجاح!`);
+        
+        // تأثير بصري بسيط: اهتزاز الشريط الجانبي للتأكيد
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.style.animation = 'none';
+        setTimeout(() => sidebar.style.animation = 'pulse 0.5s', 10);
+    }
 }
 </script>
 <div id="rescue-popup" class="stats-panel" style="z-index: 2005; display: block; background: rgba(7, 7, 15, 0.98);">
@@ -2252,5 +2341,5 @@ function runCatchup() {
   <button class="next-day-btn" onclick="exitExamMode()" style="margin-top:30px; background:#FF5C7A">إنهاء الامتحان</button>
 </div>
 
-</body>
-</html>
+
+</body></html>
