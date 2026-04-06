@@ -12,6 +12,291 @@
     transition: 0.1s;
 }
 
+/* ══ CATCHUP MODAL V3 ══ */
+.catchup-modal-overlay {
+  position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+  z-index:3500;display:none;align-items:center;justify-content:center;padding:16px;
+}
+.catchup-modal-overlay.open{display:flex;animation:fadeModal .25s ease}
+@keyframes fadeModal{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.catchup-modal{background:var(--s1);border:1px solid var(--bdr2);border-radius:20px;
+  width:100%;max-width:560px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
+.cm-header{padding:20px 22px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px}
+.cm-header h2{font-size:1rem;font-weight:900;flex:1}
+.cm-close{background:var(--s2);border:1px solid var(--bdr);color:var(--mt);width:30px;height:30px;
+  border-radius:8px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+.cm-body{padding:18px 22px;overflow-y:auto;flex:1}
+.cm-section-label{font-size:.68rem;font-weight:800;color:var(--mt);text-transform:uppercase;
+  letter-spacing:1.5px;margin-bottom:10px}
+.cm-dist-btns{display:flex;gap:8px;margin-bottom:18px}
+.cm-dist-btn{flex:1;padding:9px 8px;border-radius:10px;border:1px solid var(--bdr);background:var(--s2);
+  color:var(--mt2);cursor:pointer;font-size:.75rem;font-family:'Cairo',sans-serif;
+  font-weight:700;transition:all .15s;text-align:center}
+.cm-dist-btn:hover,.cm-dist-btn.active{border-color:var(--math);color:var(--math);background:rgba(124,106,255,.1)}
+.cm-dist-btn.disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+.cm-task-list{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;max-height:260px;overflow-y:auto}
+.cm-task-row{display:flex;align-items:center;gap:10px;padding:10px 12px;
+  background:var(--s2);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s}
+.cm-task-row:hover{border-color:var(--bdr2)}
+.cm-task-row.skip{opacity:.4;text-decoration:line-through}
+.cm-task-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--mt);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.65rem;transition:all .2s}
+.cm-task-row:not(.skip) .cm-task-check{border-color:var(--math);background:rgba(124,106,255,.15);color:var(--math)}
+.cm-task-info{flex:1;min-width:0}
+.cm-task-name{font-size:.78rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm-task-meta{font-size:.65rem;color:var(--mt);margin-top:2px}
+.cm-priority-badge{font-size:.6rem;padding:2px 7px;border-radius:10px;font-weight:700;white-space:nowrap}
+.cm-footer{padding:14px 22px;border-top:1px solid var(--bdr);display:flex;gap:8px;align-items:center}
+.cm-footer .cm-cancel{flex:1;padding:10px;border-radius:10px;background:transparent;
+  border:1px solid var(--bdr);color:var(--mt);cursor:pointer;font-family:'Cairo',sans-serif;font-size:.8rem}
+.cm-footer .cm-confirm{flex:2;padding:10px;border-radius:10px;background:linear-gradient(135deg,var(--math),var(--arb));
+  border:none;color:#fff;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:800}
+.cm-footer .cm-confirm:hover{opacity:.9}
+.cm-footer .cm-confirm:disabled{opacity:.45;cursor:not-allowed}
+.cm-footer .cm-confirm.is-loading{
+  pointer-events:none;
+  animation:catchupPulse 1s ease-in-out infinite;
+  filter:saturate(1.25);
+}
+.cm-footer .cm-confirm.is-loading::after{
+  content:'';
+  display:inline-block;
+  width:12px;height:12px;
+  margin-right:7px;
+  border:2px solid rgba(255,255,255,.35);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:catchupSpin .7s linear infinite;
+  vertical-align:middle;
+}
+.cm-stat{font-size:.72rem;color:var(--mt);flex:1;text-align:center}
+@keyframes catchupSpin{to{transform:rotate(360deg)}}
+@keyframes catchupPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.catchup-modal.distribution-success{
+  animation:catchupSuccess .55s cubic-bezier(.22,1,.36,1);
+}
+@keyframes catchupSuccess{
+  0%{transform:scale(.95);box-shadow:0 0 0 rgba(124,106,255,0)}
+  45%{transform:scale(1.02);box-shadow:0 0 40px rgba(45,212,160,.22)}
+  100%{transform:scale(1);box-shadow:0 0 0 rgba(45,212,160,0)}
+}
+
+/* ══ RESCUE SESSION V2 ══ */
+.rescue-overlay-v2{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);
+  z-index:3500;display:none;align-items:center;justify-content:center;padding:16px;}
+.rescue-overlay-v2.open{display:flex;animation:fadeModal .25s ease}
+.rescue-modal{background:var(--s1);border:1px solid rgba(255,92,122,.25);border-radius:20px;
+  width:100%;max-width:580px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column}
+.rescue-header{padding:20px 22px 14px;border-bottom:1px solid rgba(255,92,122,.12);
+  background:rgba(255,92,122,.05);display:flex;align-items:center;gap:12px}
+.rescue-header h2{font-size:1rem;font-weight:900;color:var(--red);flex:1}
+.rescue-summary-row{display:flex;gap:10px;padding:14px 22px;border-bottom:1px solid var(--bdr)}
+.rescue-stat-pill{flex:1;text-align:center;padding:10px;border-radius:10px;background:var(--s2);border:1px solid var(--bdr)}
+.rescue-stat-pill .rv{font-size:1.4rem;font-weight:900}
+.rescue-stat-pill .rl{font-size:.65rem;color:var(--mt);margin-top:2px}
+.rescue-subj-filter{display:flex;gap:6px;flex-wrap:wrap;padding:12px 22px;border-bottom:1px solid var(--bdr)}
+.rescue-filter-btn{font-size:.68rem;padding:4px 10px;border-radius:20px;border:1px solid var(--bdr);
+  background:var(--s2);color:var(--mt);cursor:pointer;font-family:'Cairo',sans-serif;transition:all .15s}
+.rescue-filter-btn.active{border-color:var(--red);color:var(--red);background:rgba(255,92,122,.08)}
+.rescue-task-list-v2{padding:14px 22px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px;max-height:320px}
+.rescue-task-card{border-radius:12px;border:1px solid rgba(255,92,122,.15);
+  background:rgba(255,92,122,.04);overflow:hidden;transition:all .2s}
+.rescue-task-card.reviewed{border-color:rgba(45,212,160,.2);background:rgba(45,212,160,.04);opacity:.7}
+.rtc-top{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.rtc-subj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.rtc-name{font-size:.8rem;font-weight:700;flex:1}
+.rtc-day{font-size:.65rem;color:var(--mt);white-space:nowrap}
+.rtc-actions{display:flex;gap:6px;padding:0 14px 10px;padding-right:30px}
+.rtc-btn{font-size:.68rem;font-family:'Cairo',sans-serif;padding:4px 10px;border-radius:7px;
+  border:1px solid var(--bdr);background:transparent;color:var(--mt2);cursor:pointer;
+  display:flex;align-items:center;gap:4px;transition:all .15s;white-space:nowrap}
+.rtc-btn.pom{border-color:var(--pom);color:var(--pom)}
+.rtc-btn.pom:hover{background:var(--pom-bg)}
+.rtc-btn.done-btn:hover{border-color:var(--sci);color:var(--sci);background:rgba(45,212,160,.08)}
+.rescue-footer{padding:14px 22px;border-top:1px solid var(--bdr);display:flex;gap:8px}
+.rescue-footer button{flex:1;padding:10px;border-radius:10px;font-family:'Cairo',sans-serif;
+  font-size:.8rem;font-weight:700;cursor:pointer;border:1px solid var(--bdr);
+  background:var(--s2);color:var(--mt2);transition:all .15s}
+.rescue-footer button:hover{border-color:var(--bdr2);color:var(--tx)}
+
+/* تمييز المهمة المتأخرة بعد التدارك */
+.task-item.catchup-task{
+  border-right:3px solid rgba(255,92,122,.55);
+  background:linear-gradient(90deg,rgba(255,92,122,.09),transparent 50%);
+}
+.late-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:.58rem;font-weight:800;padding:2px 7px;border-radius:999px;
+  background:rgba(255,92,122,.16);color:var(--red);
+  border:1px solid rgba(255,92,122,.33);margin-left:6px;vertical-align:middle;
+}
+
+/* ══ EXAM MODAL V2 ══ */
+.exam-setup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);
+  z-index:3500;display:none;align-items:center;justify-content:center;padding:16px}
+.exam-setup-overlay.open{display:flex;animation:fadeModal .25s ease}
+.exam-setup-modal{background:var(--s1);border:1px solid var(--bdr2);border-radius:20px;
+  width:100%;max-width:500px;overflow:hidden}
+.esm-header{padding:20px 22px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px}
+.esm-header h2{font-size:1rem;font-weight:900;flex:1}
+.esm-body{padding:18px 22px}
+.esm-label{font-size:.68rem;font-weight:800;color:var(--mt);text-transform:uppercase;
+  letter-spacing:1.5px;margin-bottom:10px;display:block}
+.esm-subj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:20px}
+.esm-subj-btn{padding:9px 6px;border-radius:10px;border:1px solid var(--bdr);background:var(--s2);
+  cursor:pointer;font-family:'Cairo',sans-serif;font-size:.72rem;font-weight:700;
+  transition:all .15s;text-align:center;color:var(--mt2)}
+.esm-subj-btn:hover,.esm-subj-btn.sel{border-color:currentColor;background:rgba(255,255,255,.05)}
+.esm-time-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.esm-time-btn{flex:1;min-width:70px;padding:9px 8px;border-radius:10px;border:1px solid var(--bdr);
+  background:var(--s2);cursor:pointer;font-family:'Cairo',sans-serif;font-size:.75rem;
+  font-weight:700;transition:all .15s;color:var(--mt2);text-align:center}
+.esm-time-btn:hover,.esm-time-btn.sel{border-color:var(--phi);color:var(--phi);background:rgba(255,179,71,.08)}
+.esm-time-custom{display:flex;align-items:center;gap:8px;margin-bottom:20px}
+.esm-time-custom input{background:var(--s2);border:1px solid var(--bdr);color:var(--tx);
+  font-family:'Cairo',sans-serif;padding:7px 12px;border-radius:8px;font-size:.8rem;width:80px;outline:none}
+.esm-time-custom input:focus{border-color:var(--phi)}
+.esm-start-btn{width:100%;padding:13px;border-radius:12px;
+  background:linear-gradient(135deg,#FF5C7A,#FFB347);border:none;color:#fff;
+  font-family:'Cairo',sans-serif;font-size:.9rem;font-weight:900;cursor:pointer;transition:opacity .15s}
+.esm-start-btn:disabled{opacity:.4;cursor:not-allowed}
+.esm-start-btn:not(:disabled):hover{opacity:.9}
+
+/* ══ EXAM ACTIVE SCREEN V2 ══ */
+.exam-active-overlay{position:fixed;inset:0;background:var(--bg);z-index:3000;
+  display:none;flex-direction:column}
+.exam-active-overlay.open{display:flex}
+.exam-top-bar{display:flex;align-items:center;justify-content:space-between;padding:20px 30px;
+  border-bottom:1px solid var(--bdr);background:rgba(255,92,122,.04);flex-shrink:0}
+.exam-subject-badge{font-size:1.2rem;font-weight:900;display:flex;align-items:center;gap:10px}
+.exam-timer-v2{font-size:4.5rem;font-weight:900;font-family:monospace;transition:color .5s;letter-spacing:2px}
+.exam-progress-bar{height:4px;background:rgba(255,255,255,.06);flex-shrink:0}
+.exam-progress-fill{height:100%;background:linear-gradient(90deg,#FF5C7A,#FFB347);transition:width 1s linear}
+.exam-main{display:flex;flex:1;overflow:hidden}
+.exam-notes-area{flex:1;padding:24px 30px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+.exam-notes-label{font-size:.72rem;font-weight:800;color:var(--mt);text-transform:uppercase;letter-spacing:1.5px}
+.exam-notes-input{flex:1;width:100%;background:rgba(255,255,255,.02);border:1px solid var(--bdr);
+  border-radius:12px;color:var(--tx);font-family:'Cairo',sans-serif;font-size:.9rem;
+  padding:16px;resize:none;outline:none;line-height:1.8;direction:rtl}
+.exam-notes-input:focus{border-color:rgba(255,92,122,.35)}
+.exam-right-panel{width:220px;border-right:1px solid var(--bdr);padding:20px;
+  display:flex;flex-direction:column;gap:14px;flex-shrink:0;overflow-y:auto}
+.exam-stat-card{background:var(--s1);border:1px solid var(--bdr);border-radius:12px;padding:14px;text-align:center}
+.exam-stat-card .ev{font-size:1.6rem;font-weight:900}
+.exam-stat-card .el{font-size:.65rem;color:var(--mt);margin-top:3px}
+.exam-warning{background:rgba(255,179,71,.1);border:1px solid rgba(255,179,71,.25);
+  border-radius:12px;padding:12px;font-size:.75rem;font-weight:700;color:var(--phi);text-align:center}
+.exam-controls{border-top:1px solid var(--bdr);padding:16px 30px;display:flex;gap:10px;
+  align-items:center;flex-shrink:0;background:rgba(0,0,0,.2)}
+.exam-end-btn{padding:10px 24px;border-radius:10px;background:rgba(255,92,122,.15);
+  border:1px solid rgba(255,92,122,.3);color:var(--red);font-family:'Cairo',sans-serif;
+  font-size:.82rem;font-weight:800;cursor:pointer;transition:all .15s}
+.exam-end-btn:hover{background:rgba(255,92,122,.25)}
+
+/* ══ EXAM RESULT MODAL ══ */
+.exam-result-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+  z-index:4000;display:none;align-items:center;justify-content:center;padding:16px}
+.exam-result-overlay.open{display:flex;animation:fadeModal .3s ease}
+.exam-result-modal{background:var(--s1);border:1px solid var(--bdr2);border-radius:20px;
+  width:100%;max-width:440px;padding:28px;text-align:center}
+.exam-result-modal h2{font-size:1.2rem;font-weight:900;margin-bottom:6px}
+.erm-stats{display:flex;gap:10px;margin:20px 0}
+.erm-stat{flex:1;background:var(--s2);border:1px solid var(--bdr);border-radius:12px;padding:14px}
+.erm-stat .v{font-size:1.4rem;font-weight:900}
+.erm-stat .l{font-size:.65rem;color:var(--mt)}
+.erm-score-wrap{margin:16px 0;text-align:right}
+.erm-score-label{font-size:.78rem;color:var(--mt);margin-bottom:8px}
+.erm-score-input{width:100%;background:var(--s2);border:1px solid var(--bdr);border-radius:10px;
+  color:var(--tx);font-family:'Cairo',sans-serif;font-size:.85rem;padding:10px 14px;outline:none;direction:rtl}
+.erm-score-input:focus{border-color:var(--sci)}
+.erm-btn{width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,var(--sci),var(--arb));
+  border:none;color:#fff;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:800;cursor:pointer}
+
+/* ══ FLASH CARDS FEATURE ══ */
+.flashcard-fab{position:fixed;bottom:100px;left:20px;background:linear-gradient(135deg,var(--phi),#FF8C42);
+  border:none;color:#fff;border-radius:50px;padding:10px 16px;cursor:pointer;
+  font-family:'Cairo',sans-serif;font-size:.75rem;font-weight:800;
+  box-shadow:0 4px 20px rgba(255,179,71,.3);z-index:900;display:flex;align-items:center;gap:6px;
+  transition:all .2s;white-space:nowrap}
+.flashcard-fab:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(255,179,71,.4)}
+.flashcard-panel{position:fixed;bottom:160px;left:20px;width:320px;background:var(--s1);
+  border:1px solid var(--bdr2);border-radius:16px;z-index:1000;overflow:hidden;
+  transform:scale(.9) translateY(10px);opacity:0;pointer-events:none;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.flashcard-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+.fc-header{padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:8px}
+.fc-header span{font-size:.8rem;font-weight:800;flex:1}
+.fc-close{background:var(--s2);border:1px solid var(--bdr);color:var(--mt);width:26px;height:26px;
+  border-radius:7px;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center}
+.fc-tabs{display:flex;border-bottom:1px solid var(--bdr)}
+.fc-tab{flex:1;padding:9px;font-size:.72rem;font-weight:700;cursor:pointer;
+  font-family:'Cairo',sans-serif;background:transparent;border:none;color:var(--mt);
+  border-bottom:2px solid transparent;transition:all .15s}
+.fc-tab.active{color:var(--phi);border-bottom-color:var(--phi)}
+.fc-tab-content{padding:14px;display:none;max-height:280px;overflow-y:auto}
+.fc-tab-content.active{display:block}
+.fc-add-form{display:flex;flex-direction:column;gap:8px}
+.fc-add-form textarea{background:var(--s2);border:1px solid var(--bdr);color:var(--tx);
+  font-family:'Cairo',sans-serif;font-size:.78rem;padding:8px 10px;border-radius:8px;
+  resize:none;outline:none;direction:rtl;min-height:55px}
+.fc-add-form textarea:focus{border-color:var(--phi)}
+.fc-add-form select{background:var(--s2);border:1px solid var(--bdr);color:var(--tx);
+  font-family:'Cairo',sans-serif;font-size:.75rem;padding:7px 10px;border-radius:8px;outline:none}
+.fc-add-btn{padding:8px;border-radius:8px;background:linear-gradient(135deg,var(--phi),#FF8C42);
+  border:none;color:#fff;font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:800;cursor:pointer}
+.fc-card{background:var(--s2);border:1px solid var(--bdr);border-radius:10px;
+  margin-bottom:8px;overflow:hidden;cursor:pointer;transition:all .15s}
+.fc-card:hover{border-color:var(--phi)}
+.fc-card-front{padding:12px;font-size:.78rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.fc-card-back{padding:10px 12px 12px;font-size:.75rem;color:var(--mt2);border-top:1px solid var(--bdr);
+  display:none;direction:rtl;line-height:1.6}
+.fc-card.flipped .fc-card-back{display:block}
+.fc-card-meta{font-size:.6rem;color:var(--mt);margin-top:6px;display:flex;gap:6px}
+.fc-del{background:none;border:none;color:var(--mt);cursor:pointer;font-size:.75rem;margin-right:auto}
+.fc-del:hover{color:var(--red)}
+.fc-empty{font-size:.75rem;color:var(--mt);text-align:center;padding:20px}
+
+/* ══ AI QUESTION GENERATOR ══ */
+.aiq-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);
+  z-index:3500;display:none;align-items:center;justify-content:center;padding:16px}
+.aiq-overlay.open{display:flex;animation:fadeModal .25s ease}
+.aiq-modal{background:var(--s1);border:1px solid rgba(124,106,255,.3);border-radius:20px;
+  width:100%;max-width:580px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column}
+.aiq-header{padding:18px 22px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px}
+.aiq-header h2{font-size:.95rem;font-weight:900;flex:1;background:linear-gradient(135deg,var(--math),var(--arb));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.aiq-body{padding:18px 22px;overflow-y:auto;flex:1}
+.aiq-subj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:16px}
+.aiq-subj-btn{padding:9px 6px;border-radius:10px;border:1px solid var(--bdr);background:var(--s2);
+  cursor:pointer;font-family:'Cairo',sans-serif;font-size:.72rem;font-weight:700;
+  transition:all .15s;text-align:center;color:var(--mt2)}
+.aiq-subj-btn:hover,.aiq-subj-btn.sel{border-color:var(--math);color:var(--math);background:rgba(124,106,255,.1)}
+.aiq-topic-input{width:100%;background:var(--s2);border:1px solid var(--bdr);color:var(--tx);
+  font-family:'Cairo',sans-serif;font-size:.82rem;padding:10px 14px;border-radius:10px;
+  outline:none;direction:rtl;margin-bottom:14px}
+.aiq-topic-input:focus{border-color:var(--math)}
+.aiq-diff-row{display:flex;gap:7px;margin-bottom:16px}
+.aiq-diff-btn{flex:1;padding:8px;border-radius:8px;border:1px solid var(--bdr);background:var(--s2);
+  cursor:pointer;font-family:'Cairo',sans-serif;font-size:.72rem;font-weight:700;color:var(--mt2);transition:all .15s}
+.aiq-diff-btn:hover,.aiq-diff-btn.sel{background:rgba(255,255,255,.06);border-color:var(--bdr2);color:var(--tx)}
+.aiq-generate-btn{width:100%;padding:13px;border-radius:12px;
+  background:linear-gradient(135deg,var(--math),var(--arb));border:none;color:#fff;
+  font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:900;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s}
+.aiq-generate-btn:disabled{opacity:.5;cursor:not-allowed}
+.aiq-generate-btn:not(:disabled):hover{opacity:.9}
+.aiq-result{margin-top:16px;background:var(--s2);border:1px solid var(--bdr);border-radius:12px;padding:16px;
+  font-size:.82rem;line-height:1.85;direction:rtl;color:var(--tx);min-height:100px;
+  white-space:pre-wrap;display:none}
+.aiq-result.visible{display:block;animation:fadeModal .2s ease}
+.aiq-result-actions{display:flex;gap:8px;margin-top:10px}
+.aiq-action-btn{flex:1;padding:8px;border-radius:9px;background:transparent;
+  border:1px solid var(--bdr);color:var(--mt2);font-family:'Cairo',sans-serif;
+  font-size:.75rem;font-weight:700;cursor:pointer;transition:all .15s}
+.aiq-action-btn:hover{border-color:var(--bdr2);color:var(--tx);background:var(--s2)}
+.aiq-spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* تمييز المهام المتداركة داخل القائمة */
 [data-catchup="true"] {
     border-left: 5px solid #2DD4A0 !important; /* خط أخضر جانبي */
@@ -318,6 +603,65 @@ header{
   .pom-panel{left:12px;right:12px;width:auto}
 }
 
+/* تحسين تجربة الهاتف */
+@media(max-width:700px){
+  body{overflow-x:hidden}
+  .main{padding:12px 8px;gap:12px}
+  .sidebar{gap:10px}
+  .prog-grid,.info-grid{grid-template-columns:1fr}
+
+  .day-header{flex-direction:column;align-items:flex-start;gap:10px;padding:14px}
+  .dh-left,.dh-center,.dh-right{width:100%}
+  .dh-right{display:flex;align-items:baseline;justify-content:space-between}
+  .day-pct-big{font-size:1.35rem}
+
+  .tg-head{padding:10px 12px;gap:8px;flex-wrap:wrap}
+  .task-item-row{padding:10px 12px}
+  .task-actions{padding:0 12px 10px;flex-wrap:wrap}
+  .task-note-btn,.task-pom-btn,.focus-mode-btn{flex:1;min-width:120px;justify-content:center}
+  .task-hrs{min-width:auto}
+
+  .planner-start-wrap{flex-wrap:wrap}
+  .planner-row{padding:8px}
+  .planner-time{min-width:74px}
+
+  .overview,.stats-panel,.heatmap-panel{padding:14px 12px;top:56px;max-height:84vh}
+  .ov-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .subj-bars-grid{grid-template-columns:1fr}
+
+  .cm-body,.cm-footer,.rescue-summary-row,.rescue-subj-filter,.rescue-task-list-v2,.rescue-footer,
+  .esm-body,.aiq-body{padding-left:12px;padding-right:12px}
+  .cm-footer,.rescue-footer{flex-wrap:wrap}
+  .cm-footer .cm-stat{order:3;flex:0 0 100%}
+  .cm-footer .cm-cancel,.cm-footer .cm-confirm{flex:1}
+  .cm-dist-btns{gap:6px}
+  .cm-dist-btn{font-size:.7rem;padding:8px 6px}
+
+  .flashcard-fab{left:12px;bottom:86px}
+  .flashcard-panel{left:12px;right:12px;bottom:140px;width:auto}
+  .pom-fab{right:12px;bottom:22px}
+  .pom-panel{left:12px;right:12px;bottom:70px;width:auto}
+
+  .exam-top-bar{padding:12px}
+  .exam-subject-badge{font-size:.9rem}
+  .exam-timer-v2{font-size:2.1rem;letter-spacing:1px}
+  .exam-main{flex-direction:column}
+  .exam-right-panel{width:100%;border-right:none;border-top:1px solid var(--bdr);padding:12px;order:2}
+  .exam-notes-area{padding:12px}
+  .exam-controls{padding:12px;flex-wrap:wrap}
+}
+
+@media(max-width:420px){
+  header{height:54px}
+  .main{padding:10px 6px}
+  .day-header{border-radius:12px}
+  .task-group{border-radius:12px}
+  .task-note-btn,.task-pom-btn,.focus-mode-btn{min-width:100%}
+  .ov-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .esm-subj-grid,.aiq-subj-grid{grid-template-columns:1fr 1fr}
+  .cm-dist-btns{flex-direction:column}
+}
+
 
 /* ═══ FEATURE 1: DIFFICULTY RATING ═══ */
 .diff-popup{
@@ -456,15 +800,6 @@ header{
 </style>
 </head>
 <body>
-  <div style="position: sticky; top: 0; z-index: 9999; background: var(--bg); padding: 10px; border-bottom: 1px solid var(--bdr); display: flex; gap: 10px; justify-content: center;">
-    <button onclick="exportMyProgress()" style="background:#2DD4A0; color:#000; border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-family:Cairo; font-weight:bold;">
-        📥 حفظ نسخة للتحويل
-    </button>
-    
-    <button onclick="document.getElementById(&#39;importFile&#39;).click()" style="background:#7C6AFF; color:#fff; border:none; padding:8px 15px; border-radius:8px; cursor:pointer; font-family:Cairo; font-weight:bold;">
-        📤 رفع نسخة من جهاز آخر
-    </button>
-    <input type="file" id="importFile" style="display:none" onchange="importMyProgress(event)">
 </div>
 
 <!-- ══ OVERVIEW ══ -->
@@ -605,6 +940,7 @@ header{
   </div>
   <div class="hd-right">
     <button class="hd-btn" onclick="toggleHeatmap()">🟩 حرارة</button>
+    <button class="hd-btn" onclick="openAIQ()" style="border-color:rgba(124,106,255,.5);color:var(--math)">🤖 أسئلة AI</button>
     <button class="hd-btn" onclick="toggleStats()">📊 إحصائيات</button>
     <button class="hd-btn" onclick="generateWeeklyReport()">📄 تقرير</button>
     <button class="hd-btn" onclick="exportProgress()">📤 تصدير</button>
@@ -2097,11 +2433,12 @@ renderDayContent = function(dayIdx, day, ph, comp){
         const areaId = 'area_'+dayIdx+'_'+t.id;
         const diffRating = getTaskDiffRating(dayIdx, t.id);
         const diffBadgeHTML = diffRating ? '<span class="diff-badge '+diffRating+'">'+(diffRating==='easy'?'سهلة':diffRating==='medium'?'متوسطة':'صعبة')+'</span>' : '';
-        return '<div class="task-item '+(done?'done':'')+'" id="ti_'+dayIdx+'_'+t.id+'" style="color:'+subj.c+'">'+
+        const lateBadgeHTML = t.isCatchup ? '<span class="late-badge">⏰ متأخرة</span>' : '';
+        return '<div class="task-item '+(done?'done':'')+' '+(t.isCatchup?'catchup-task':'')+'" id="ti_'+dayIdx+'_'+t.id+'" style="color:'+subj.c+'">'+
           '<div class="task-item-row" onclick="clickTask('+dayIdx+',\''+t.id+'\',event)">'+
             '<div class="task-check">'+(done?'✓':'')+'</div>'+
             '<div class="task-body">'+
-              '<div class="tn">'+diffBadgeHTML+t.l+'</div>'+
+              '<div class="tn">'+lateBadgeHTML+diffBadgeHTML+t.l+'</div>'+
               '<div class="th">'+subj.l+' · '+t.h+'h</div>'+
             '</div>'+
             '<div class="task-hrs">'+t.h+'h</div>'+
@@ -2189,11 +2526,23 @@ renderAll = function(){
 // Close heatmap on Escape
 const _origKeydown = document.onkeydown;
 document.addEventListener('keydown', e => {
-  if(e.target.tagName==='TEXTAREA' || e.target.tagName==='INPUT') return;
+  if(e.target.tagName==='TEXTAREA' || e.target.tagName==='INPUT') {
+    if(e.key==='Escape' && document.getElementById('exam-active-overlay').classList.contains('open')) {
+      endExamV2();
+    }
+    return;
+  }
   if(e.key==='Escape' && heatmapOpen) toggleHeatmap();
   if(e.key==='Escape' && focusActive) exitFocusMode();
+  if(e.key==='Escape') {
+    closeCatchupModal();
+    closeRescue();
+    closeExamSetup();
+    closeAIQ();
+    if(flashcardOpen) toggleFlashcards();
+    if(document.getElementById('exam-active-overlay').classList.contains('open')) endExamV2();
+  }
   if(e.key==='f' || e.key==='F'){
-    // Quick focus mode for first undone task
     if(!focusActive){
       const dayIdx = currentDay-1;
       const day = DAYS[dayIdx];
@@ -2212,133 +2561,832 @@ document.addEventListener('keydown', e => {
 renderAll();
 updatePomDisplay();
 renderWeaknessMap();
+// تهيئة بطاقات المراجعة بعد اكتمال تحميل الصفحة
+window.addEventListener('load', initFlashcards);
+
+// ═══════════════════════════════════════════════════════
+// IMPROVED: نظام التدارك الذكي V3
+// ═══════════════════════════════════════════════════════
+let catchupSelectedDays = 5;
+let catchupSkipSet = new Set();
+let catchupAvailableDays = [];
+
+function runCatchup() {
+  const todayIdx = currentDay - 1;
+  catchupAvailableDays = [];
+  for (let i = todayIdx; i < DAYS.length; i++) {
+    if (DAYS[i]) catchupAvailableDays.push(i);
+  }
+  if (catchupAvailableDays.length === 0) {
+    showToast("⚠️ لا توجد أيام متاحة للتوزيع حالياً");
+    return;
+  }
+
+  let pendingTasks = [];
+  for (let i = 0; i < todayIdx; i++) {
+    const day = DAYS[i];
+    if (!day || !day.tasks) continue;
+    day.tasks.forEach(task => {
+      if (!isTaskDone(i, task.id)) {
+        const rating = (state.diffRatings || {})[`${i}_${task.id}`] || 'none';
+        pendingTasks.push({ ...task, originalDay: i + 1, originalIdx: i, rating });
+      }
+    });
+  }
+  if (pendingTasks.length === 0) {
+    showToast("✨ لا توجد مهام متأخرة — جدولك نظيف تماماً!");
+    return;
+  }
+  // Sort: hard first, then medium, then others
+  const order = { hard: 0, medium: 1, easy: 2, none: 3 };
+  pendingTasks.sort((a, b) => (order[a.rating] ?? 3) - (order[b.rating] ?? 3));
+  catchupSkipSet = new Set();
+  catchupSelectedDays = Math.min(5, catchupAvailableDays.length);
+  renderCatchupModal(pendingTasks);
+  updateCatchupDayButtons();
+  document.getElementById('catchup-modal-overlay').classList.add('open');
+  window._catchupPendingTasks = pendingTasks;
+  updateCatchupStat();
+}
+
+function renderCatchupModal(tasks) {
+  const list = document.getElementById('cm-task-list');
+  list.innerHTML = tasks.map((t, idx) => {
+    const subj = S[t.s] || { c: '#8899BB', l: t.s, i: '📝' };
+    const ratingBadge = t.rating === 'hard'
+      ? `<span class="cm-priority-badge" style="background:rgba(255,92,122,.15);color:var(--red)">😰 صعبة</span>`
+      : t.rating === 'medium'
+      ? `<span class="cm-priority-badge" style="background:rgba(255,179,71,.12);color:var(--phi)">😐 متوسطة</span>`
+      : '';
+    return `<div class="cm-task-row" id="cmr_${idx}" onclick="toggleCatchupSkip(${idx})">
+      <div class="cm-task-check" id="cmcheck_${idx}">✓</div>
+      <div class="cm-task-info">
+        <div class="cm-task-name">${subj.i} ${t.l}</div>
+        <div class="cm-task-meta">يوم ${t.originalDay} · ${t.h}h · <span style="color:${subj.c}">${subj.l}</span></div>
+      </div>
+      ${ratingBadge}
+    </div>`;
+  }).join('');
+}
+
+function toggleCatchupSkip(idx) {
+  if (catchupSkipSet.has(idx)) catchupSkipSet.delete(idx);
+  else catchupSkipSet.add(idx);
+  const row = document.getElementById(`cmr_${idx}`);
+  const chk = document.getElementById(`cmcheck_${idx}`);
+  if (catchupSkipSet.has(idx)) {
+    row.classList.add('skip'); chk.textContent = '✕';
+  } else {
+    row.classList.remove('skip'); chk.textContent = '✓';
+  }
+  updateCatchupStat();
+}
+
+function toggleAllCatchupTasks() {
+  const tasks = window._catchupPendingTasks || [];
+  const allSkipped = catchupSkipSet.size === tasks.length;
+  catchupSkipSet = allSkipped ? new Set() : new Set(tasks.map((_, i) => i));
+  tasks.forEach((_, i) => {
+    const row = document.getElementById(`cmr_${i}`);
+    const chk = document.getElementById(`cmcheck_${i}`);
+    if (catchupSkipSet.has(i)) { row.classList.add('skip'); chk.textContent = '✕'; }
+    else { row.classList.remove('skip'); chk.textContent = '✓'; }
+  });
+  updateCatchupStat();
+}
+
+function selectCatchupDays(el, days) {
+  if (el.classList.contains('disabled')) return;
+  document.querySelectorAll('.cm-dist-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  catchupSelectedDays = days;
+  updateCatchupStat();
+}
+
+function updateCatchupDayButtons() {
+  const maxDays = catchupAvailableDays.length;
+  const buttons = document.querySelectorAll('.cm-dist-btn');
+  buttons.forEach(btn => {
+    const days = parseInt(btn.dataset.days, 10);
+    const isEnabled = days <= maxDays;
+    btn.classList.toggle('disabled', !isEnabled);
+    btn.title = isEnabled ? '' : `غير متاح: المتبقي ${maxDays} يوم فقط`;
+    if (!isEnabled) btn.classList.remove('active');
+  });
+
+  if (catchupSelectedDays > maxDays) {
+    catchupSelectedDays = maxDays;
+  }
+  const activeBtn = document.querySelector(`.cm-dist-btn[data-days="${catchupSelectedDays}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+}
+
+function updateCatchupStat() {
+  const tasks = window._catchupPendingTasks || [];
+  const selected = tasks.length - catchupSkipSet.size;
+  const effectiveDays = Math.max(1, Math.min(catchupSelectedDays, catchupAvailableDays.length || catchupSelectedDays));
+  document.getElementById('cm-stat-label').textContent = `${selected} مهمة موزّعة على ${effectiveDays} أيام`;
+  document.getElementById('cm-confirm-btn').disabled = selected === 0;
+}
+
+function closeCatchupModal() {
+  document.getElementById('catchup-modal-overlay').classList.remove('open');
+}
+
+function confirmCatchup() {
+  const confirmBtn = document.getElementById('cm-confirm-btn');
+  const modal = document.querySelector('.catchup-modal');
+  const oldBtnText = confirmBtn ? confirmBtn.innerHTML : '';
+  if (confirmBtn) {
+    confirmBtn.classList.add('is-loading');
+    confirmBtn.innerHTML = 'جارٍ التوزيع...';
+  }
+
+  const tasks = window._catchupPendingTasks || [];
+  const toDistribute = tasks.filter((_, i) => !catchupSkipSet.has(i));
+  if (toDistribute.length === 0) {
+    if (confirmBtn) {
+      confirmBtn.classList.remove('is-loading');
+      confirmBtn.innerHTML = oldBtnText;
+    }
+    closeCatchupModal();
+    return;
+  }
+
+  const distributionDays = catchupAvailableDays.slice(0, Math.min(catchupSelectedDays, catchupAvailableDays.length));
+  if (distributionDays.length === 0) {
+    if (confirmBtn) {
+      confirmBtn.classList.remove('is-loading');
+      confirmBtn.innerHTML = oldBtnText;
+    }
+    closeCatchupModal();
+    showToast("⚠️ لا توجد أيام متاحة للتوزيع");
+    return;
+  }
+
+  // توزيع عادل حسب الساعات: كل مهمة تذهب لليوم الأقل حملاً.
+  const dayLoads = distributionDays.map(dayIdx => {
+    const day = DAYS[dayIdx];
+    return (day?.tasks || []).reduce((sum, t) => sum + (Number(t.h) || 0), 0);
+  });
+
+  const sortedForBalance = [...toDistribute].sort((a, b) => (Number(b.h) || 0) - (Number(a.h) || 0));
+  sortedForBalance.forEach((task, index) => {
+    let lightestIdx = 0;
+    for (let i = 1; i < dayLoads.length; i++) {
+      if (dayLoads[i] < dayLoads[lightestIdx]) lightestIdx = i;
+    }
+    const targetDayIdx = distributionDays[lightestIdx];
+
+    const originDay = DAYS[task.originalIdx];
+    if (originDay && Array.isArray(originDay.tasks)) {
+      const originTaskIdx = originDay.tasks.findIndex(t => t.id === task.id);
+      if (originTaskIdx !== -1) {
+        originDay.tasks.splice(originTaskIdx, 1);
+      }
+    }
+
+    const movedTask = {
+      id: `rcp_${Date.now()}_${index}_${task.originalIdx}`,
+      s: task.s,
+      l: `${task.l} 🔁`,
+      h: task.h,
+      isCatchup: true
+    };
+    DAYS[targetDayIdx].tasks.push(movedTask);
+    dayLoads[lightestIdx] += Number(task.h) || 0;
+  });
+
+  saveState(state);
+  renderDay(currentDay);
+  showToast(`🚀 تم تدارك ${toDistribute.length} مهمة على ${distributionDays.length} أيام!`);
+  const sidebar = document.querySelector('.sidebar');
+  sidebar.style.animation = 'none';
+  setTimeout(() => sidebar.style.animation = 'pulse 0.5s', 10);
+  if (confirmBtn) {
+    confirmBtn.classList.remove('is-loading');
+    confirmBtn.innerHTML = oldBtnText;
+  }
+  if (modal) modal.classList.remove('distribution-success');
+  closeCatchupModal();
+}
+
+// ═══════════════════════════════════════════════════════
+// IMPROVED: جلسة الإنقاذ V2
+// ═══════════════════════════════════════════════════════
+let rescueCurrentFilter = 'all';
+let rescueReviewedSet = new Set();
+
+function openRescueSession() {
+  const ratings = getDiffRatings();
+  let hardTasks = [];
+  Object.entries(ratings).forEach(([key, val]) => {
+    if (val !== 'hard') return;
+    const parts = key.split('_');
+    const dayIdx = parseInt(parts[0]);
+    const taskId = parts.slice(1).join('_');
+    const day = DAYS[dayIdx];
+    if (!day) return;
+    const task = day.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    hardTasks.push({ task, dayIdx, key });
+  });
+
+  // Summary row
+  const totalHard = hardTasks.length;
+  const subjects = [...new Set(hardTasks.map(h => h.task.s))];
+  document.getElementById('rescue-summary-row').innerHTML = `
+    <div class="rescue-stat-pill"><div class="rv" style="color:var(--red)">${totalHard}</div><div class="rl">مهمة صعبة</div></div>
+    <div class="rescue-stat-pill"><div class="rv" style="color:var(--phi)">${subjects.length}</div><div class="rl">مادة متأثرة</div></div>
+    <div class="rescue-stat-pill"><div class="rv" style="color:var(--arb)">${rescueReviewedSet.size}</div><div class="rl">تم مراجعتها</div></div>`;
+
+  // Subject filter buttons
+  const filterContainer = document.getElementById('rescue-subj-filter');
+  const uniqueSubjs = [...new Set(hardTasks.map(h => h.task.s))];
+  filterContainer.innerHTML = `<button class="rescue-filter-btn ${rescueCurrentFilter==='all'?'active':''}" onclick="filterRescue('all')">الكل (${totalHard})</button>` +
+    uniqueSubjs.map(sk => {
+      const subj = S[sk] || { l: sk, i: '📝' };
+      const count = hardTasks.filter(h => h.task.s === sk).length;
+      return `<button class="rescue-filter-btn ${rescueCurrentFilter===sk?'active':''}" onclick="filterRescue('${sk}')" style="${rescueCurrentFilter===sk?'border-color:'+((S[sk]||{c:'#999'}).c)+';color:'+((S[sk]||{c:'#999'}).c):''}">${subj.i} ${subj.l} (${count})</button>`;
+    }).join('');
+
+  renderRescueTasks(hardTasks);
+  window._rescueHardTasks = hardTasks;
+  document.getElementById('rescue-overlay-v2').classList.add('open');
+}
+
+function renderRescueTasks(hardTasks) {
+  const filter = rescueCurrentFilter;
+  const visible = filter === 'all' ? hardTasks : hardTasks.filter(h => h.task.s === filter);
+  const list = document.getElementById('rescue-task-list-v2');
+  if (visible.length === 0) {
+    list.innerHTML = `<div class="fc-empty">لا توجد مهام صعبة في هذه المادة حالياً 🎉</div>`;
+    return;
+  }
+  list.innerHTML = visible.map(({ task, dayIdx, key }) => {
+    const subj = S[task.s] || { c: '#8899BB', l: task.s, i: '📝' };
+    const isReviewed = rescueReviewedSet.has(key);
+    return `<div class="rescue-task-card ${isReviewed?'reviewed':''}" id="rtc_${key}">
+      <div class="rtc-top">
+        <div class="rtc-subj-dot" style="background:${subj.c}"></div>
+        <div class="rtc-name">${subj.i} ${task.l}</div>
+        <div class="rtc-day">يوم ${dayIdx+1}</div>
+      </div>
+      <div class="rtc-actions">
+        <button class="rtc-btn pom" onclick="rescueStartPom('${task.l}',event)">⏱️ بومودورو</button>
+        <button class="rtc-btn done-btn" onclick="markRescueReviewed('${key}')">
+          ${isReviewed ? '✓ تمت المراجعة' : '📌 وضّع كمراجَع'}
+        </button>
+        <span style="flex:1"></span>
+        <span style="font-size:.65rem;color:${subj.c};font-weight:700">${task.h}h</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterRescue(filter) {
+  rescueCurrentFilter = filter;
+  openRescueSession();
+}
+
+function rescueStartPom(taskName, e) {
+  if (e) e.stopPropagation();
+  closeRescue();
+  startPomForTask(taskName, null);
+}
+
+function markRescueReviewed(key) {
+  if (rescueReviewedSet.has(key)) rescueReviewedSet.delete(key);
+  else rescueReviewedSet.add(key);
+  openRescueSession();
+}
+
+function markAllRescueReviewed() {
+  (window._rescueHardTasks || []).forEach(({ key }) => rescueReviewedSet.add(key));
+  openRescueSession();
+  showToast('✅ تم وضع جميع المهام الصعبة كمراجَعة!');
+}
+
+function closeRescue() {
+  document.getElementById('rescue-overlay-v2').classList.remove('open');
+  rescueCurrentFilter = 'all';
+}
+
+// ═══════════════════════════════════════════════════════
+// IMPROVED: الامتحان التجريبي V2
+// ═══════════════════════════════════════════════════════
+let examIntervalV2 = null;
+let examElapsedInterval = null;
+let examTotalSecs = 210 * 60;
+let examSecsLeft = 210 * 60;
+let examElapsedSecs = 0;
+let examSelectedSubj = null;
+let examSelectedMinutes = 210;
+let examStartTime = null;
+let examWarningShown = false;
+
+function openExamSetup() {
+  // Build subject grid
+  const grid = document.getElementById('esm-subj-grid');
+  grid.innerHTML = Object.entries(S).map(([k, v]) =>
+    `<button class="esm-subj-btn" style="color:${v.c}" onclick="selectExamSubj(this,'${k}','${v.l}','${v.i}')">${v.i}<br>${v.l}</button>`
+  ).join('');
+  document.getElementById('exam-setup-overlay').classList.add('open');
+}
+
+function closeExamSetup() {
+  document.getElementById('exam-setup-overlay').classList.remove('open');
+}
+
+function selectExamSubj(el, key, label, icon) {
+  document.querySelectorAll('.esm-subj-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  examSelectedSubj = { key, label, icon };
+  document.getElementById('esm-start-btn').disabled = false;
+}
+
+function selectExamTime(el, mins) {
+  document.querySelectorAll('.esm-time-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  examSelectedMinutes = mins;
+  document.getElementById('esm-custom-min').value = '';
+  document.getElementById('esm-custom-label').textContent = '';
+}
+
+function onCustomTimeInput(input) {
+  const val = parseInt(input.value);
+  if (val >= 10) {
+    document.querySelectorAll('.esm-time-btn').forEach(b => b.classList.remove('sel'));
+    examSelectedMinutes = val;
+    const h = Math.floor(val / 60);
+    const m = val % 60;
+    document.getElementById('esm-custom-label').textContent = h > 0 ? `${h}h ${m > 0 ? m + 'm' : ''}` : `${m} دقيقة`;
+  }
+}
+
+function startExamV2() {
+  if (!examSelectedSubj) return;
+  examTotalSecs = examSelectedMinutes * 60;
+  examSecsLeft = examTotalSecs;
+  examElapsedSecs = 0;
+  examWarningShown = false;
+  examStartTime = Date.now();
+  const subj = examSelectedSubj;
+  document.getElementById('exam-subject-v2').innerHTML = `${subj.icon} <span>${subj.label}</span>`;
+  document.getElementById('exam-notes-input').value = '';
+  closeExamSetup();
+  document.getElementById('exam-active-overlay').classList.add('open');
+  updateExamDisplay();
+  examIntervalV2 = setInterval(() => {
+    examSecsLeft--;
+    examElapsedSecs++;
+    updateExamDisplay();
+    if (examSecsLeft <= 1800 && !examWarningShown) {
+      examWarningShown = true;
+      document.getElementById('exam-warning').style.display = 'block';
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 660; osc.type = 'sine';
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+        osc.start(); osc.stop(ctx.currentTime + 1.2);
+      } catch(e) {}
+    }
+    if (examSecsLeft <= 0) endExamV2();
+  }, 1000);
+}
+
+function updateExamDisplay() {
+  const h = Math.floor(examSecsLeft / 3600);
+  const m = Math.floor((examSecsLeft % 3600) / 60);
+  const s = examSecsLeft % 60;
+  const timeStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const timerEl = document.getElementById('exam-timer-v2');
+  timerEl.textContent = timeStr;
+  const pct = examTotalSecs > 0 ? examSecsLeft / examTotalSecs : 1;
+  timerEl.style.color = pct > 0.5 ? '#FF5C7A' : pct > 0.25 ? '#FFB347' : '#FF3060';
+  document.getElementById('exam-progress-fill').style.width = (pct * 100) + '%';
+  document.getElementById('exam-pct-display').textContent = Math.round(pct * 100) + '%';
+  const eh = Math.floor(examElapsedSecs / 3600);
+  const em = Math.floor((examElapsedSecs % 3600) / 60);
+  const es = examElapsedSecs % 60;
+  document.getElementById('exam-elapsed').textContent = `${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}:${String(es).padStart(2,'0')}`;
+  document.getElementById('exam-elapsed-secs').textContent = Math.floor(examElapsedSecs / 60);
+}
+
+function endExamEarly() { endExamV2(); }
+
+function endExamV2() {
+  clearInterval(examIntervalV2);
+  clearInterval(examElapsedInterval);
+  document.getElementById('exam-active-overlay').classList.remove('open');
+  // Show result modal
+  const totalMins = examSelectedMinutes;
+  const elapsedMins = Math.floor(examElapsedSecs / 60);
+  document.getElementById('erm-subject-label').textContent = examSelectedSubj ? `${examSelectedSubj.icon} ${examSelectedSubj.label}` : '—';
+  const fmtTime = (mins) => { const h = Math.floor(mins/60); const m = mins%60; return h>0?`${h}h ${m}m`:`${m} دقيقة`; };
+  document.getElementById('erm-time-taken').textContent = fmtTime(elapsedMins);
+  document.getElementById('erm-total-time').textContent = fmtTime(totalMins);
+  document.getElementById('erm-notes').value = '';
+  document.getElementById('exam-result-overlay').classList.add('open');
+}
+
+function closeExamResult() {
+  document.getElementById('exam-result-overlay').classList.remove('open');
+  const notes = document.getElementById('erm-notes').value.trim();
+  if (notes) showToast('✅ تم حفظ ملاحظات الامتحان');
+}
+
+// Keep legacy function name for any existing calls
+function openExamSetupLegacy() { openExamSetup(); }
+function exitExamMode() { endExamV2(); }
+
+// ═══════════════════════════════════════════════════════
+// NEW FEATURE 1: بطاقات المراجعة السريعة (Flash Cards)
+// ═══════════════════════════════════════════════════════
+let flashcardOpen = false;
+let flashcards = [];
+
+function loadFlashcards() {
+  try { flashcards = JSON.parse(localStorage.getItem('bac_flashcards') || '[]'); } catch(e) { flashcards = []; }
+}
+function saveFlashcards() {
+  localStorage.setItem('bac_flashcards', JSON.stringify(flashcards));
+}
+
+function initFlashcards() {
+  loadFlashcards();
+  const sel = document.getElementById('fc-subj-sel');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">اختر المادة...</option>' +
+    Object.entries(S).map(([k,v]) => `<option value="${k}">${v.i} ${v.l}</option>`).join('');
+}
+
+function toggleFlashcards() {
+  flashcardOpen = !flashcardOpen;
+  document.getElementById('flashcard-panel').classList.toggle('open', flashcardOpen);
+  if (flashcardOpen) renderFlashcards();
+}
+
+function switchFcTab(tab, el) {
+  document.querySelectorAll('.fc-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.fc-tab-content').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(`fc-${tab}-tab`).classList.add('active');
+  if (tab === 'review') renderFlashcards();
+}
+
+function addFlashCard() {
+  const subj = document.getElementById('fc-subj-sel').value;
+  const front = document.getElementById('fc-front').value.trim();
+  const back = document.getElementById('fc-back').value.trim();
+  if (!front || !back) { showToast('⚠️ أدخل السؤال والإجابة'); return; }
+  const card = { id: Date.now(), subj, front, back, created: new Date().toLocaleDateString('ar-DZ') };
+  flashcards.unshift(card);
+  saveFlashcards();
+  document.getElementById('fc-front').value = '';
+  document.getElementById('fc-back').value = '';
+  showToast('🃏 تمت إضافة البطاقة!');
+  switchFcTab('review', document.querySelectorAll('.fc-tab')[1]);
+}
+
+function renderFlashcards() {
+  const list = document.getElementById('fc-cards-list');
+  if (flashcards.length === 0) {
+    list.innerHTML = '<div class="fc-empty">لا توجد بطاقات بعد.<br>أضف بطاقة من تبويب "إضافة" 🃏</div>';
+    return;
+  }
+  list.innerHTML = flashcards.map(card => {
+    const subj = card.subj ? (S[card.subj] || { c: '#8899BB', i: '📝' }) : { c: '#8899BB', i: '📝' };
+    return `<div class="fc-card" id="fcard_${card.id}" onclick="flipCard(${card.id})">
+      <div class="fc-card-front">
+        <span style="color:${subj.c}">${subj.i}</span>
+        <span style="flex:1">${card.front}</span>
+        <button class="fc-del" onclick="deleteFlashcard(${card.id},event)">🗑</button>
+      </div>
+      <div class="fc-card-back">${card.back}
+        <div class="fc-card-meta">
+          <span>${card.created || ''}</span>
+          <span style="color:${subj.c}">${(S[card.subj]||{l:''}).l}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function flipCard(id) { document.getElementById(`fcard_${id}`)?.classList.toggle('flipped'); }
+
+function deleteFlashcard(id, e) {
+  e.stopPropagation();
+  flashcards = flashcards.filter(c => c.id !== id);
+  saveFlashcards();
+  renderFlashcards();
+  showToast('🗑 تم حذف البطاقة');
+}
+
+// ═══════════════════════════════════════════════════════
+// NEW FEATURE 2: مولّد أسئلة بالذكاء الاصطناعي
+// ═══════════════════════════════════════════════════════
+let aiqSelectedSubj = null;
+let aiqSelectedDiff = 'متوسط';
+let aiqLastResult = '';
+
+function openAIQ() {
+  const grid = document.getElementById('aiq-subj-grid');
+  grid.innerHTML = Object.entries(S).map(([k, v]) =>
+    `<button class="aiq-subj-btn" style="--sc:${v.c}" onclick="selectAIQSubj(this,'${k}','${v.l}','${v.i}')">${v.i}<br><span style="font-size:.65rem">${v.l}</span></button>`
+  ).join('');
+  document.getElementById('aiq-overlay').classList.add('open');
+}
+
+function closeAIQ() { document.getElementById('aiq-overlay').classList.remove('open'); }
+
+function selectAIQSubj(el, key, label, icon) {
+  document.querySelectorAll('.aiq-subj-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  aiqSelectedSubj = { key, label, icon };
+  const btn = document.getElementById('aiq-gen-btn');
+  if (!btn) return;
+  btn.disabled = false;
+  const span = document.getElementById('aiq-btn-text');
+  if (span) span.textContent = `🤖 توليد أسئلة — ${label}`;
+  else btn.textContent = `🤖 توليد أسئلة — ${label}`;
+}
+
+function selectAIQDiff(el, diff) {
+  document.querySelectorAll('.aiq-diff-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  aiqSelectedDiff = diff;
+}
+
+async function generateAIQuestions() {
+  if (!aiqSelectedSubj) return;
+  const btn = document.getElementById('aiq-gen-btn');
+  const result = document.getElementById('aiq-result');
+  const actions = document.getElementById('aiq-actions');
+  const topic = document.getElementById('aiq-topic').value.trim();
+  btn.disabled = true;
+  btn.innerHTML = `<div class="aiq-spinner"></div> جاري التوليد...`;
+  result.style.display = 'none'; actions.style.display = 'none';
+  const subjName = aiqSelectedSubj.label;
+  const topicStr = topic ? `الموضوع: "${topic}"` : '';
+  const prompt = `أنت مساعد دراسي لطالب بكالوريا جزائري (علوم تجريبية). \nالمادة: ${subjName}.\n${topicStr}\nالمستوى: ${aiqSelectedDiff}.\n\nاكتب 3 أسئلة تدريبية على مستوى البكالوريا الجزائرية، كل سؤال يحتوي على:\n- السؤال بوضوح\n- الإجابة النموذجية المختصرة\n\nاستخدم الرقم والسطر للتنظيم. لا تضف مقدمات أو تعليقات إضافية.`;
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content?.map(b => b.text || '').join('') || '❌ لم يتم الحصول على إجابة';
+    aiqLastResult = text;
+    result.textContent = text;
+    result.classList.add('visible');
+    result.style.display = 'block';
+    actions.style.display = 'flex';
+  } catch(err) {
+    result.textContent = '❌ خطأ في الاتصال. تحقق من الإنترنت وحاول مرة أخرى.';
+    result.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.innerHTML = `<span id="aiq-btn-text">🔄 توليد أسئلة جديدة — ${aiqSelectedSubj.label}</span>`;
+}
+
+function saveAIQAsFlashcard() {
+  if (!aiqLastResult || !aiqSelectedSubj) return;
+  loadFlashcards();
+  const card = {
+    id: Date.now(),
+    subj: aiqSelectedSubj.key,
+    front: `أسئلة: ${aiqSelectedSubj.label}${document.getElementById('aiq-topic').value.trim() ? ' — ' + document.getElementById('aiq-topic').value.trim() : ''}`,
+    back: aiqLastResult,
+    created: new Date().toLocaleDateString('ar-DZ')
+  };
+  flashcards.unshift(card);
+  saveFlashcards();
+  showToast('🃏 تم حفظ الأسئلة كبطاقة مراجعة!');
+}
+
+function copyAIQResult() {
+  navigator.clipboard.writeText(aiqLastResult).then(() => showToast('📋 تم النسخ!')).catch(() => showToast('❌ لم يتم النسخ'));
+}
+
 // تحديث المستوى بناءً على الـ XP
 function updateLevel() {
   const xp = state.xp || 0;
   const level = Math.floor(xp / 500);
   const levels = ["مبتدئ", "محارب", "أسطورة البكالوريا", "سوبر عادل"];
-  
   if(document.getElementById('level-name')) {
     document.getElementById('level-name').textContent = levels[Math.min(level, 3)];
     document.getElementById('xp-text').textContent = `${xp % 500} / 500`;
     document.getElementById('xp-bar-fill').style.width = `${(xp % 500) / 5}%`;
   }
 }
-
-// تشغيل جلسة الإنقاذ
-function openRescueSession() {
-  const list = document.getElementById('rescue-list');
-  list.innerHTML = "";
-  let count = 0;
-  Object.entries(state.diffRatings || {}).forEach(([key, val]) => {
-    if(val === 'hard') {
-      count++;
-      list.innerHTML += `<div style="padding:12px; background:rgba(255,92,122,0.05); border-radius:8px; margin-bottom:8px; border:1px solid rgba(255,92,122,0.1)">مهمة صعبة تحتاج مراجعة</div>`;
-    }
-  });
-  if(count === 0) list.innerHTML = "<p style='text-align:center; padding:20px'>لا توجد مهام صعبة حالياً. أحسنت!</p>";
-  document.getElementById('rescue-popup').style.display = 'block';
-}
-
-// نظام الامتحان
-let examInterval;
-function openExamSetup() {
-  const subj = prompt("أدخل اسم المادة للامتحان:");
-  if(subj) {
-    document.getElementById('exam-subject').textContent = subj;
-    document.getElementById('exam-overlay').style.display = 'flex';
-    let timeLeft = 3.5 * 3600; 
-    examInterval = setInterval(() => {
-      timeLeft--;
-      let h = Math.floor(timeLeft/3600);
-      let m = Math.floor((timeLeft%3600)/60);
-      let s = timeLeft%60;
-      document.getElementById('exam-timer').textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-      if(timeLeft <= 0) exitExamMode();
-    }, 1000);
-  }
-}
-
-function exitExamMode() {
-  clearInterval(examInterval);
-  document.getElementById('exam-overlay').style.display = 'none';
-}
-// نظام التدارك الذكي المطور (V2)
-function runCatchup() {
-    const todayIdx = currentDay - 1; // فهرس اليوم الحالي
-    let pendingTasks = [];
-
-    // 1. جرد المهام المتراكمة (الروطار) من الأيام السابقة
-    for (let i = 0; i < todayIdx; i++) {
-        const day = DAYS[i];
-        if (!day || !day.tasks) continue;
-        
-        day.tasks.forEach(task => {
-            // نتحقق إذا كانت المهمة لم تكتمل بعد
-            if (!isTaskDone(i, task.id)) {
-                // نأخذ نسخة من المهمة مع حفظ بيانات المادة الأصلية
-                pendingTasks.push({ ...task, originalDay: i + 1 });
-            }
-        });
-    }
-
-    // 2. التحقق من وجود مهام (إذا كان الجدول نظيفاً)
-    if (pendingTasks.length === 0) {
-        showToast("لا توجد مهام متأخرة. جدولك نظيف تماماً! ✨");
-        return;
-    }
-
-    // 3. الرسالة التفاعلية المخصصة التي طلبتها
-    const confirmMessage = `لديك ${pendingTasks.length} مهمة متأخرة.\nهل تريد توزيعها على الأيام القادمة بشكل متوازن؟`;
-    
-    if (confirm(confirmMessage)) {
-        // 4. توزيع المهام على الـ 7 أيام القادمة
-        pendingTasks.forEach((task, index) => {
-            // توزيع عادل: كل مهمة تذهب لليوم التالي بالترتيب
-            const targetDayIdx = todayIdx + (index % 7); 
-            
-            if (DAYS[targetDayIdx]) {
-                const catchupTask = {
-                    ...task,
-                    id: 'rcp_' + Date.now() + '_' + index, // معرف فريد جديد لمنع التداخل
-                    l: task.l + " ⚠️ (مُتداركة)", // تمييز الاسم
-                    isCatchup: true // علامة للتنسيق البصري
-                };
-                
-                // إضافة المهمة المتأخرة إلى قائمة مهام اليوم المستهدف
-                DAYS[targetDayIdx].tasks.push(catchupTask);
-            }
-        });
-
-        // 5. حفظ البيانات الجديدة في الذاكرة (LocalStorage)
-        saveState();
-
-        // 6. تحديث الواجهة فوراً
-        renderDay(currentDay); 
-        
-        // رسالة نجاح مع عدد المهام
-        showToast(`🚀 تم تدارك ${pendingTasks.length} مهمة بنجاح!`);
-        
-        // تأثير بصري بسيط: اهتزاز الشريط الجانبي للتأكيد
-        const sidebar = document.querySelector('.sidebar');
-        sidebar.style.animation = 'none';
-        setTimeout(() => sidebar.style.animation = 'pulse 0.5s', 10);
-    }
-}
 </script>
-<div id="rescue-popup" class="stats-panel" style="z-index: 2005; display: block; background: rgba(7, 7, 15, 0.98);">
-  <div style="max-width:500px; margin: 40px auto; background:var(--s1); padding:20px; border-radius:15px; border:1px solid var(--bdr)">
-    <h2 style="color:#FF5C7A">🆘 جلسة الإنقاذ</h2>
-    <p style="font-size:.8rem; color:var(--mt); margin-bottom:15px">المهام التي صنفتها كـ "صعبة" سابقاً:</p>
-    <div id="rescue-list" style="max-height:300px; overflow-y:auto; margin-bottom:20px"><p style="text-align:center; padding:20px">لا توجد مهام صعبة حالياً. أحسنت!</p></div>
-    <button class="hd-btn" onclick="document.getElementById(&#39;rescue-popup&#39;).style.display=&#39;none&#39;">إغلاق</button>
+<!-- ══ RESCUE SESSION V2 ══ -->
+<div class="rescue-overlay-v2" id="rescue-overlay-v2" onclick="if(event.target===this)closeRescue()">
+  <div class="rescue-modal">
+    <div class="rescue-header">
+      <div style="font-size:1.4rem">🆘</div>
+      <h2>جلسة الإنقاذ</h2>
+      <button class="cm-close" onclick="closeRescue()">✕</button>
+    </div>
+    <div class="rescue-summary-row" id="rescue-summary-row"></div>
+    <div class="rescue-subj-filter" id="rescue-subj-filter"></div>
+    <div class="rescue-task-list-v2" id="rescue-task-list-v2"></div>
+    <div class="rescue-footer">
+      <button onclick="closeRescue()">إغلاق</button>
+      <button onclick="markAllRescueReviewed()" style="color:var(--sci);border-color:rgba(45,212,160,.3)">✓ وضّع الكل كمراجَع</button>
+    </div>
   </div>
 </div>
 
-<div id="exam-overlay" style="display: none; position: fixed; inset: 0px; background: rgb(7, 7, 15); z-index: 3000; flex-direction: column; align-items: center; justify-content: center;">
-  <h1 id="exam-subject" style="font-size:2rem; margin-bottom:20px">إسلامية</h1>
-  <div id="exam-timer" style="font-size:6rem; font-weight:900; color:#FF5C7A; font-family:monospace">03:29:58</div>
-  <button class="next-day-btn" onclick="exitExamMode()" style="margin-top:30px; background:#FF5C7A">إنهاء الامتحان</button>
+<!-- ══ EXAM SETUP MODAL V2 ══ -->
+<div class="exam-setup-overlay" id="exam-setup-overlay" onclick="if(event.target===this)closeExamSetup()">
+  <div class="exam-setup-modal">
+    <div class="esm-header">
+      <div style="font-size:1.3rem">📝</div>
+      <h2>امتحان تجريبي</h2>
+      <button class="cm-close" onclick="closeExamSetup()">✕</button>
+    </div>
+    <div class="esm-body">
+      <span class="esm-label">اختر المادة</span>
+      <div class="esm-subj-grid" id="esm-subj-grid"></div>
+      <span class="esm-label">مدة الامتحان</span>
+      <div class="esm-time-row">
+        <div class="esm-time-btn" onclick="selectExamTime(this,60)">1 ساعة</div>
+        <div class="esm-time-btn" onclick="selectExamTime(this,90)">1.5 ساعة</div>
+        <div class="esm-time-btn sel" onclick="selectExamTime(this,210)">3.5 ساعة<br><span style="font-size:.6rem;color:var(--mt)">رسمي</span></div>
+        <div class="esm-time-btn" onclick="selectExamTime(this,120)">2 ساعة</div>
+      </div>
+      <div class="esm-time-custom">
+        <span style="font-size:.75rem;color:var(--mt)">أو أدخل دقائق:</span>
+        <input type="number" id="esm-custom-min" placeholder="90" min="10" max="240" oninput="onCustomTimeInput(this)">
+        <span style="font-size:.72rem;color:var(--mt2)" id="esm-custom-label"></span>
+      </div>
+      <button class="esm-start-btn" id="esm-start-btn" onclick="startExamV2()" disabled>ابدأ الامتحان 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EXAM ACTIVE SCREEN V2 ══ -->
+<div class="exam-active-overlay" id="exam-active-overlay">
+  <div class="exam-top-bar">
+    <div class="exam-subject-badge" id="exam-subject-v2">—</div>
+    <div class="exam-timer-v2" id="exam-timer-v2" style="color:#FF5C7A">03:30:00</div>
+    <div style="text-align:left">
+      <div style="font-size:.65rem;color:var(--mt)">وقت منقضٍ</div>
+      <div style="font-size:1rem;font-weight:800" id="exam-elapsed">00:00:00</div>
+    </div>
+  </div>
+  <div class="exam-progress-bar"><div class="exam-progress-fill" id="exam-progress-fill" style="width:100%"></div></div>
+  <div class="exam-main">
+    <div class="exam-right-panel">
+      <div class="exam-stat-card">
+        <div class="ev" id="exam-pct-display" style="color:#FF5C7A">100%</div>
+        <div class="el">وقت متبقٍ</div>
+      </div>
+      <div class="exam-stat-card">
+        <div class="ev" id="exam-elapsed-secs" style="color:var(--arb)">0</div>
+        <div class="el">دقيقة منقضية</div>
+      </div>
+      <div class="exam-warning" id="exam-warning" style="display:none">
+        ⚠️ تبقّى 30 دقيقة! راجع إجاباتك
+      </div>
+      <div style="font-size:.68rem;color:var(--mt);line-height:1.7;background:var(--s2);border:1px solid var(--bdr);border-radius:10px;padding:10px">
+        💡 دوّن أفكارك وخطوات الحل في المساحة يساراً
+      </div>
+    </div>
+    <div class="exam-notes-area">
+      <div class="exam-notes-label">📋 مسوّدتك — دوّن الأفكار والخطوات هنا</div>
+      <textarea class="exam-notes-input" id="exam-notes-input" placeholder="ابدأ الكتابة هنا...&#10;&#10;يمكنك رسم خطوات الحل، تدوين الصيغ، أو أي ملاحظات تساعدك..."></textarea>
+    </div>
+  </div>
+  <div class="exam-controls">
+    <button class="exam-end-btn" onclick="endExamEarly()">⏹ إنهاء الامتحان</button>
+    <div style="flex:1;font-size:.72rem;color:var(--mt);text-align:center">اضغط ESC للخروج الطارئ</div>
+    <div style="font-size:.72rem;color:var(--mt)">امتحان تجريبي — بكالوريا 2025</div>
+  </div>
+</div>
+
+<!-- ══ EXAM RESULT MODAL ══ -->
+<div class="exam-result-overlay" id="exam-result-overlay">
+  <div class="exam-result-modal">
+    <div style="font-size:2.5rem;margin-bottom:10px">🎓</div>
+    <h2>انتهى الامتحان!</h2>
+    <p style="font-size:.8rem;color:var(--mt);margin-bottom:4px" id="erm-subject-label">—</p>
+    <div class="erm-stats">
+      <div class="erm-stat">
+        <div class="v" id="erm-time-taken" style="color:var(--phi)">—</div>
+        <div class="l">وقت فعلي</div>
+      </div>
+      <div class="erm-stat">
+        <div class="v" id="erm-total-time" style="color:var(--arb)">—</div>
+        <div class="l">وقت المنح</div>
+      </div>
+    </div>
+    <div class="erm-score-wrap">
+      <div class="erm-score-label">كيف كان أداؤك؟ (اختياري)</div>
+      <textarea class="erm-score-input" id="erm-notes" placeholder="مثال: أتممت 3 من 4 أسئلة، الجزء الثالث كان صعباً..." rows="3"></textarea>
+    </div>
+    <button class="erm-btn" onclick="closeExamResult()">✓ حفظ وإغلاق</button>
+  </div>
+</div>
+
+<!-- ══ CATCHUP MODAL V3 ══ -->
+<div class="catchup-modal-overlay" id="catchup-modal-overlay" onclick="if(event.target===this)closeCatchupModal()">
+  <div class="catchup-modal">
+    <div class="cm-header">
+      <div style="font-size:1.3rem">🔄</div>
+      <h2>نظام التدارك الذكي</h2>
+      <button class="cm-close" onclick="closeCatchupModal()">✕</button>
+    </div>
+    <div class="cm-body">
+      <div class="cm-section-label">توزيع المهام على</div>
+      <div class="cm-dist-btns" id="cm-dist-btns">
+        <div class="cm-dist-btn" data-days="3" onclick="selectCatchupDays(this,3)">3 أيام<br><span style="font-size:.6rem;color:var(--mt)">مكثّف</span></div>
+        <div class="cm-dist-btn active" data-days="5" onclick="selectCatchupDays(this,5)">5 أيام<br><span style="font-size:.6rem;color:var(--mt)">متوازن</span></div>
+        <div class="cm-dist-btn" data-days="7" onclick="selectCatchupDays(this,7)">7 أيام<br><span style="font-size:.6rem;color:var(--mt)">مريح</span></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="cm-section-label" style="margin:0">المهام المتأخرة</div>
+        <button onclick="toggleAllCatchupTasks()" style="font-size:.65rem;background:transparent;border:1px solid var(--bdr);color:var(--mt);padding:3px 8px;border-radius:6px;cursor:pointer;font-family:'Cairo',sans-serif">تحديد / إلغاء الكل</button>
+      </div>
+      <div class="cm-task-list" id="cm-task-list"></div>
+    </div>
+    <div class="cm-footer">
+      <span class="cm-stat" id="cm-stat-label">—</span>
+      <button class="cm-cancel" onclick="closeCatchupModal()">إلغاء</button>
+      <button class="cm-confirm" id="cm-confirm-btn" onclick="confirmCatchup()">توزيع المهام 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FLASH CARDS FEATURE ══ -->
+<button class="flashcard-fab" id="flashcard-fab" onclick="toggleFlashcards()">
+  🃏 بطاقات المراجعة
+</button>
+<div class="flashcard-panel" id="flashcard-panel">
+  <div class="fc-header">
+    <span>🃏 بطاقات المراجعة السريعة</span>
+    <button class="fc-close" onclick="toggleFlashcards()">✕</button>
+  </div>
+  <div class="fc-tabs">
+    <button class="fc-tab active" onclick="switchFcTab('add',this)">➕ إضافة</button>
+    <button class="fc-tab" onclick="switchFcTab('review',this)">📖 مراجعة</button>
+  </div>
+  <div class="fc-tab-content active" id="fc-add-tab">
+    <div class="fc-add-form">
+      <select id="fc-subj-sel">
+        <option value="">اختر المادة...</option>
+      </select>
+      <textarea id="fc-front" placeholder="السؤال أو المفهوم..." rows="2"></textarea>
+      <textarea id="fc-back" placeholder="الإجابة أو الشرح..." rows="2"></textarea>
+      <button class="fc-add-btn" onclick="addFlashCard()">➕ إضافة البطاقة</button>
+    </div>
+  </div>
+  <div class="fc-tab-content" id="fc-review-tab">
+    <div id="fc-cards-list"></div>
+  </div>
+</div>
+
+<!-- ══ AI QUESTION GENERATOR ══ -->
+<div class="aiq-overlay" id="aiq-overlay" onclick="if(event.target===this)closeAIQ()">
+  <div class="aiq-modal">
+    <div class="aiq-header">
+      <div style="font-size:1.3rem">🤖</div>
+      <h2>مولّد أسئلة ذكي</h2>
+      <button class="cm-close" onclick="closeAIQ()">✕</button>
+    </div>
+    <div class="aiq-body">
+      <div class="cm-section-label" style="margin-bottom:10px">اختر المادة</div>
+      <div class="aiq-subj-grid" id="aiq-subj-grid"></div>
+      <div class="cm-section-label" style="margin-bottom:10px">الموضوع أو الدرس (اختياري)</div>
+      <input class="aiq-topic-input" id="aiq-topic" placeholder="مثال: متتاليات حسابية، قانون أوم، التركيب الضوئي...">
+      <div class="cm-section-label" style="margin-bottom:10px">مستوى الصعوبة</div>
+      <div class="aiq-diff-row">
+        <button class="aiq-diff-btn" onclick="selectAIQDiff(this,'سهل')">😊 سهل</button>
+        <button class="aiq-diff-btn sel" onclick="selectAIQDiff(this,'متوسط')">😐 متوسط</button>
+        <button class="aiq-diff-btn" onclick="selectAIQDiff(this,'صعب')">😰 صعب</button>
+        <button class="aiq-diff-btn" onclick="selectAIQDiff(this,'بكالوريا')">🎓 بكالوريا</button>
+      </div>
+      <button class="aiq-generate-btn" id="aiq-gen-btn" onclick="generateAIQuestions()" disabled>
+        <span id="aiq-btn-text">اختر مادة أولاً</span>
+      </button>
+      <div class="aiq-result" id="aiq-result"></div>
+      <div class="aiq-result-actions" id="aiq-actions" style="display:none">
+        <button class="aiq-action-btn" onclick="generateAIQuestions()">🔄 أسئلة جديدة</button>
+        <button class="aiq-action-btn" onclick="saveAIQAsFlashcard()" style="color:var(--phi);border-color:rgba(255,179,71,.3)">🃏 حفظ كبطاقة</button>
+        <button class="aiq-action-btn" onclick="copyAIQResult()" style="color:var(--sci);border-color:rgba(45,212,160,.3)">📋 نسخ</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 
